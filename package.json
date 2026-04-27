@@ -11,7 +11,7 @@
     "test": "vitest run --passWithNoTests",
     "test:ui": "vitest --ui",
     "server": "node server/index.js",
-    "server:dev": "cd server && npx nodemon index.js"
+    "server:dev": "node server/node_modules/.bin/nodemon server/index.js --watch server"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.5",
