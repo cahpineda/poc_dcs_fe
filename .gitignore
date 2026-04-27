@@ -26,6 +26,9 @@ dist-ssr
 .rtk
 bin
 .mcp.json
+.env
+.env.*
+!.env.example
 .planning/.ticket-lock
 .planning/ink-tools-errors.jsonl
 .planning/codebase/
