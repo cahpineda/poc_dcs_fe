@@ -6,6 +6,7 @@ import type { ISeatPricingService } from '@/application/ports';
 import { Cloud2SeatPlanAdapter } from './adapters/Cloud2SeatPlanAdapter';
 import { Cloud2SeatCommandAdapter } from './adapters/Cloud2SeatCommandAdapter';
 import { MockSeatPlanAdapter } from './adapters/MockSeatPlanAdapter';
+import { MockSeatCommandAdapter } from './adapters/MockSeatCommandAdapter';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
@@ -29,7 +30,9 @@ export const services = {
   seatQuery: import.meta.env.DEV
     ? new MockSeatPlanAdapter()
     : new Cloud2SeatPlanAdapter(axiosInstance),
-  seatCommand: new Cloud2SeatCommandAdapter(axiosInstance),
+  seatCommand: import.meta.env.DEV
+    ? new MockSeatCommandAdapter()
+    : new Cloud2SeatCommandAdapter(axiosInstance),
   seatPricing: stubPricingService,
 } as const;
 
