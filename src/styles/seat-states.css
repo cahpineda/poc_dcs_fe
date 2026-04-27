@@ -1,0 +1,45 @@
+/* Base seat cell */
+.seat_cell {
+  width: var(--seat-size);
+  height: var(--seat-size);
+  border-radius: var(--seat-radius);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-base);
+  color: var(--color-seat-text-light);
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: filter var(--transition-fast), transform var(--transition-fast);
+  user-select: none;
+}
+
+/* Status variants */
+.seat_available         { background: var(--color-seat-available);      cursor: pointer; }
+.seat_occupied          { background: var(--color-seat-occupied); }
+.seat_blocked           { background: var(--color-seat-blocked);        color: var(--color-seat-text-dark); }
+.seat_exit_row_available { background: var(--color-seat-exit-available); cursor: pointer; }
+.seat_exit_row_occupied  { background: var(--color-seat-exit-occupied); }
+.seat_unavailable       { background: var(--color-seat-unavailable);    color: var(--color-seat-text-dark); border: 1px solid var(--color-border); }
+.seat_infant_occupied   { background: var(--color-seat-infant); }
+
+/* Selected state — overrides status color */
+.seat_cell.seat_selected {
+  background: var(--color-seat-selected) !important;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--color-brand-secondary);
+}
+
+/* Hover for clickable seats */
+.seat_available:hover,
+.seat_exit_row_available:hover {
+  filter: brightness(1.15);
+}
+
+/* Aisle gap */
+.aisle_gap {
+  width: var(--aisle-gap);
+  flex-shrink: 0;
+}

@@ -1,0 +1,34 @@
+.seat_assign_pending,
+.seat_assign_success,
+.seat_assign_error,
+.selected_seat_info {
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-base);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 4px;
+}
+
+.seat_assign_pending {
+  background: rgba(245, 124, 0, 0.1);
+  color: var(--color-pending);
+  border: 1px solid rgba(245, 124, 0, 0.3);
+}
+
+.seat_assign_success {
+  background: rgba(56, 142, 60, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(56, 142, 60, 0.3);
+}
+
+.seat_assign_error {
+  background: rgba(198, 40, 40, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(198, 40, 40, 0.3);
+}
+
+.selected_seat_info {
+  background: rgba(21, 101, 192, 0.1);
+  color: var(--color-seat-selected);
+  border: 1px solid rgba(21, 101, 192, 0.3);
+  font-weight: var(--font-weight-bold);
+}

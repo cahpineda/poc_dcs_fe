@@ -15,7 +15,7 @@ None
 - [x] **Phase 3: API Adapter Layer** - Hexagonal port/adapter layer connecting React to cloud_2 REST APIs
 - [x] **Phase 4: Seat Map UI** - Core seat map visualization with cabin layout, seat status, multi-deck
 - [ ] **Phase 5: Seat Operations** - Seat assignment, blocking, reassignment, zone-balanced seating commands
-- [ ] **Phase 6: Design Token Extraction** - Extract DCS visual tokens from cloud_2 CSS for future design system
+- [x] **Phase 6: Design Token Extraction** - Extract DCS visual tokens from cloud_2 CSS for future design system
 - [ ] **Phase 7: Integration and Validation** - End-to-end validation against cloud_2, feature parity audit
 
 ## Phase Details
