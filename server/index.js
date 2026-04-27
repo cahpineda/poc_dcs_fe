@@ -2,6 +2,8 @@
 
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 const seatPlanRoutes = require('./routes/seatPlan');
 const commandRoutes = require('./routes/commands');
 
@@ -18,6 +20,10 @@ app.use(
 
 // Parse JSON bodies
 app.use(express.json());
+
+// Swagger UI
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/docs.json', (req, res) => res.json(swaggerSpec));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -36,16 +42,6 @@ app.use('/dc', commandRoutes);
 
 app.listen(PORT, () => {
   console.log(`Mock DCS server running on http://localhost:${PORT}`);
-  console.log(`Serving flights: FL001, FL002`);
-  console.log(`Endpoints:`);
-  console.log(`  GET  /health`);
-  console.log(`  GET  /ws/v1.8/get_seat_plan?flight_id=<id>`);
-  console.log(`  GET  /ws/v1.8/get_seat_occupancy?flight_id=<id>`);
-  console.log(`  POST /ajax/seat_plan/assign_seat`);
-  console.log(`  POST /ajax/seat_plan/block_seat`);
-  console.log(`  POST /ajax/seat_plan/unblock_seat`);
-  console.log(`  POST /ajax/seat_plan/reseat_passenger`);
-  console.log(`  POST /dc/unseat_passenger`);
-  console.log(`  POST /dc/swap_seats`);
-  console.log(`  POST /dc/reseat_group`);
+  console.log(`Swagger UI:  http://localhost:${PORT}/docs`);
+  console.log(`OpenAPI JSON: http://localhost:${PORT}/docs.json`);
 });
