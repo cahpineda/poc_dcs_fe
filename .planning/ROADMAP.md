@@ -86,12 +86,13 @@ Plans:
 **Goal**: Command handlers and UI interactions for seat assignment, blocking, reassignment, and zone-balanced seating.
 **Depends on**: Phase 4
 **Research**: Unlikely
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: Seat assignment command + optimistic UI update via TanStack Query mutation
-- [ ] 05-02: Seat blocking and unblocking operations
-- [ ] 05-03: Zone-balanced automatic seating algorithm and UI
+- [ ] 05-01: Typed command value objects (AssignSeatCommand, BlockSeatCommand, UnblockSeatCommand, ReseatPassengerCommand) + port type safety (TDD)
+- [ ] 05-02: useSeatAssign + useSeatBlock + useSeatUnblock mutation hooks with cache invalidation (TDD)
+- [ ] 05-03: autoAssignSeat zone-balanced pure domain algorithm (TDD)
+- [ ] 05-04: SeatPlanTab wired with assign mutation + auto-assign button + MockSeatCommandAdapter dev preview (auto)
 
 ### Phase 6: Design Token Extraction
 **Goal**: Extract DCS visual design tokens from cloud_2 CSS/templates and apply to React app. Foundation for future centralized design system.
@@ -114,3 +115,4 @@ Plans:
 - [ ] 07-01: Integration tests against cloud_2 API (real endpoint smoke tests)
 - [ ] 07-02: Feature parity audit — cloud_2 DCS vs React POC checklist
 - [ ] 07-03: Performance baseline and POC documentation for team review
+
