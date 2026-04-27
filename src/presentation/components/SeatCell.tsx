@@ -55,6 +55,8 @@ export interface SeatCellProps {
   blockNote?: string;
   gender?: Gender | null;
   reseatMode?: boolean;
+  ssrs?: string[];
+  rushStatus?: boolean;
   onSelect: (seatNumber: string) => void;
 }
 
@@ -69,11 +71,15 @@ export function SeatCell({
   blockNote,
   gender,
   reseatMode = false,
+  ssrs,
+  rushStatus = false,
   onSelect,
 }: SeatCellProps) {
   const clickableSet = reseatMode ? RESEAT_MODE_CLICKABLE : NORMAL_CLICKABLE;
   const isClickable = clickableSet.has(status);
   const dimmed = reseatMode && !isClickable && status !== 'unavailable';
+  const isSideSeat = /[AF]$/.test(seatNumber);
+  const showWchr = ssrs?.includes('WCHR') ?? false;
 
   const classes = [
     'seat_cell',
@@ -81,6 +87,8 @@ export function SeatCell({
     isExitRow ? 'seat_exit' : '',
     isSelected ? 'seat_selected' : '',
     dimmed ? 'seat_cell_dimmed' : '',
+    isSideSeat ? 'seat_cell_side' : '',
+    rushStatus ? 'seat_rush' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -105,6 +113,7 @@ export function SeatCell({
       {price !== undefined && <span className="seat_price">{price}</span>}
       {hasInfant && <span className="seat_infant_indicator" aria-label="infant" />}
       {blockNote && <span className="seat_block_indicator" title={blockNote} aria-label="blocked" />}
+      {showWchr && <span className="seat_ssr_wchr" aria-label="wheelchair" />}
     </button>
   );
 }

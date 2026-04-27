@@ -6,8 +6,11 @@ export interface PassengerDetailDrawerProps {
   onReseat: (seat: Seat) => void;
   onBlock: (seat: Seat) => void;
   onUnblock: (seat: Seat) => void;
+  onUnassign: (seat: Seat) => void;
+  onSwap?: (seat: Seat) => void;
   blockPending?: boolean;
   unblockPending?: boolean;
+  unassignPending?: boolean;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -25,8 +28,11 @@ export function PassengerDetailDrawer({
   onReseat,
   onBlock,
   onUnblock,
+  onUnassign,
+  onSwap,
   blockPending,
   unblockPending,
+  unassignPending,
 }: PassengerDetailDrawerProps) {
   if (!seat) return null;
 
@@ -54,6 +60,18 @@ export function PassengerDetailDrawer({
         <dd>{seat.number.toString()}</dd>
         <dt>Status</dt>
         <dd>{statusLabel}</dd>
+        {seat.boardingGroup !== null && (
+          <>
+            <dt>Boarding Group</dt>
+            <dd>{seat.boardingGroup}</dd>
+          </>
+        )}
+        {seat.pnr && (
+          <>
+            <dt>PNR</dt>
+            <dd>{seat.pnr}</dd>
+          </>
+        )}
       </dl>
       <div className="passenger_drawer__actions">
         {showReseat && (
@@ -66,6 +84,15 @@ export function PassengerDetailDrawer({
             Reseat
           </button>
         )}
+        {showReseat && onSwap && (
+          <button
+            type="button"
+            onClick={() => onSwap(seat)}
+            disabled={anyPending}
+          >
+            Swap
+          </button>
+        )}
         {showBlock && (
           <button
             type="button"
@@ -74,6 +101,16 @@ export function PassengerDetailDrawer({
             className={blockPending ? 'drawer_action_pending' : undefined}
           >
             Block seat
+          </button>
+        )}
+        {showBlock && (
+          <button
+            type="button"
+            onClick={() => onUnassign(seat)}
+            disabled={Boolean(unassignPending)}
+            className={unassignPending ? 'drawer_action_pending' : undefined}
+          >
+            Unseat
           </button>
         )}
         {showUnblock && (

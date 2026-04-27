@@ -4,15 +4,15 @@
   --color-brand-secondary: #2e6da4;
 
   /* Seat states — background */
-  --color-seat-available: #c8e6c9;
-  --color-seat-occupied: #ef5350;
+  --color-seat-available: #4A4D4F;
+  --color-seat-occupied: #947a9c;
   --color-seat-blocked: #757575;
-  --color-seat-exit-available: #ffa726;
-  --color-seat-exit-occupied: #e64a19;
+  --color-seat-exit-available: #4A4D4F;
+  --color-seat-exit-occupied: #947a9c;
   --color-seat-unavailable: #f5f5f5;
-  --color-seat-infant: #ce93d8;
-  --color-seat-checked-in: #1e88e5;
-  --color-seat-boarded: #43a047;
+  --color-seat-infant: #006400;
+  --color-seat-checked-in: #C1AA02;
+  --color-seat-boarded: #77AE00;
   --color-seat-selected: #1565c0;
 
   /* Seat states — text */
@@ -47,8 +47,10 @@
   --space-8: 2rem;
 
   /* Seat cell geometry */
-  --seat-size: 1.875rem;
-  --seat-size-wide: 3.125rem;
+  --seat-size: 28px;             /* keep for backwards compat — middle seat width */
+  --seat-cell-width: 28px;       /* middle seats */
+  --seat-cell-width-side: 38px;  /* side seats (A/F) */
+  --seat-cell-height: 35px;
   --seat-radius: 4px;
   --seat-gap: 0.25rem;
   --aisle-gap: 1rem;

@@ -5,6 +5,9 @@ import { AssignSeatCommand } from '@/domain/seat/commands/AssignSeatCommand';
 import { BlockSeatCommand } from '@/domain/seat/commands/BlockSeatCommand';
 import { UnblockSeatCommand } from '@/domain/seat/commands/UnblockSeatCommand';
 import { ReseatPassengerCommand } from '@/domain/seat/commands/ReseatPassengerCommand';
+import { UnassignSeatCommand } from '@/domain/seat/commands/UnassignSeatCommand';
+import { SwapSeatsCommand } from '@/domain/seat/commands/SwapSeatsCommand';
+import { ReseatGroupCommand } from '@/domain/seat/commands/ReseatGroupCommand';
 
 const mockPost = vi.fn();
 const mockHttp = { post: mockPost } as unknown as AxiosInstance;
@@ -64,5 +67,29 @@ describe('Cloud2SeatCommandAdapter', () => {
     await adapter.reseatPassenger(cmd);
 
     expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/reseat_passenger', cmd);
+  });
+
+  it('unassignSeat posts to /dc/unseat_passenger with the command', async () => {
+    const post = vi.fn().mockResolvedValue({});
+    const adapter = new Cloud2SeatCommandAdapter({ post } as unknown as AxiosInstance);
+    const cmd = UnassignSeatCommand.create({ flightId: 'FL001', seatNumber: '1B' });
+    await adapter.unassignSeat(cmd);
+    expect(post).toHaveBeenCalledWith('/dc/unseat_passenger', cmd);
+  });
+
+  it('swapSeats posts to /dc/swap_seats with the command', async () => {
+    const post = vi.fn().mockResolvedValue({});
+    const adapter = new Cloud2SeatCommandAdapter({ post } as unknown as AxiosInstance);
+    const cmd = SwapSeatsCommand.create({ flightId: 'FL001', seatA: '1B', seatB: '2C' });
+    await adapter.swapSeats(cmd);
+    expect(post).toHaveBeenCalledWith('/dc/swap_seats', cmd);
+  });
+
+  it('reseatGroup posts to /dc/reseat_group with the command', async () => {
+    const post = vi.fn().mockResolvedValue({});
+    const adapter = new Cloud2SeatCommandAdapter({ post } as unknown as AxiosInstance);
+    const cmd = ReseatGroupCommand.create({ flightId: 'FL001', passengerIds: ['PAX-001'] });
+    await adapter.reseatGroup(cmd);
+    expect(post).toHaveBeenCalledWith('/dc/reseat_group', cmd);
   });
 });

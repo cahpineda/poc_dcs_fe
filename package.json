@@ -9,7 +9,9 @@
     "format": "prettier --write src",
     "preview": "vite preview",
     "test": "vitest run --passWithNoTests",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "server": "node server/index.js",
+    "server:dev": "cd server && npx nodemon index.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.5",

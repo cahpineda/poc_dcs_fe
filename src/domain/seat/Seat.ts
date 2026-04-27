@@ -13,6 +13,11 @@ interface SeatProps {
   hasInfant?: boolean;
   blockNote?: string;
   gender?: SeatGender | null;
+  passengerKey?: string | null;
+  boardingGroup?: number | null;
+  rushStatus?: boolean;
+  pnr?: string | null;
+  ssrs?: string[];
 }
 
 export class Seat {
@@ -23,7 +28,12 @@ export class Seat {
     private readonly _passengerName: string | null,
     private readonly _hasInfant: boolean,
     private readonly _blockNote: string | null,
-    private readonly _gender: SeatGender | null
+    private readonly _gender: SeatGender | null,
+    private readonly _passengerKey: string | null,
+    private readonly _boardingGroup: number | null,
+    private readonly _rushStatus: boolean,
+    private readonly _pnr: string | null,
+    private readonly _ssrs: string[]
   ) {}
 
   static create(props: SeatProps): Seat {
@@ -37,7 +47,12 @@ export class Seat {
       props.gender && VALID_GENDERS.has(props.gender as SeatGender)
         ? (props.gender as SeatGender)
         : null;
-    return new Seat(props.seatNumber, props.status, props.cabinClass, passengerName, hasInfant, blockNote, gender);
+    const passengerKey = typeof props.passengerKey === 'string' ? props.passengerKey : null;
+    const boardingGroup = typeof props.boardingGroup === 'number' ? props.boardingGroup : null;
+    const rushStatus = Boolean(props.rushStatus);
+    const pnr = typeof props.pnr === 'string' ? props.pnr : null;
+    const ssrs = Array.isArray(props.ssrs) ? props.ssrs : [];
+    return new Seat(props.seatNumber, props.status, props.cabinClass, passengerName, hasInfant, blockNote, gender, passengerKey, boardingGroup, rushStatus, pnr, ssrs);
   }
 
   isAvailable(): boolean {
@@ -84,10 +99,31 @@ export class Seat {
     return this._gender;
   }
 
+  get passengerKey(): string | null {
+    return this._passengerKey;
+  }
+
+  get boardingGroup(): number | null {
+    return this._boardingGroup;
+  }
+
+  get rushStatus(): boolean {
+    return this._rushStatus;
+  }
+
+  get pnr(): string | null {
+    return this._pnr;
+  }
+
+  get ssrs(): string[] {
+    return this._ssrs;
+  }
+
   withStatus(status: SeatStatus): Seat {
     return new Seat(
       this._number, status, this._cabin,
-      this._passengerName, this._hasInfant, this._blockNote, this._gender
+      this._passengerName, this._hasInfant, this._blockNote, this._gender,
+      this._passengerKey, this._boardingGroup, this._rushStatus, this._pnr, this._ssrs
     );
   }
 

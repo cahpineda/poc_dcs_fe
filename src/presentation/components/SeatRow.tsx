@@ -26,6 +26,8 @@ export function SeatRow({ row, selectedSeat, reseatMode = false, onSeatSelect }:
           blockNote={seat.blockNote ?? undefined}
           gender={seat.gender}
           reseatMode={reseatMode}
+          ssrs={seat.ssrs}
+          rushStatus={seat.rushStatus}
           onSelect={onSeatSelect}
         />
       ))}

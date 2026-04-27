@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import fs from 'fs';
+import path from 'path';
 import { SeatCell, AisleGap } from '../SeatCell';
 
 describe('SeatCell', () => {
@@ -231,6 +233,122 @@ describe('SeatCell — reseat mode', () => {
       <SeatCell seatNumber="12A" status="occupied" reseatMode={true} onSelect={vi.fn()} />
     );
     expect(container.querySelector('.seat_cell_dimmed')).toBeInTheDocument();
+  });
+});
+
+describe('SeatCell — side seat geometry', () => {
+  // Test 1 — Happy path: A-seat gets seat_cell_side class
+  it('seat ending in A has class seat_cell_side', () => {
+    const { container } = render(
+      <SeatCell seatNumber="1A" status="available" onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('seat_cell_side');
+  });
+
+  // Test 2 — F-seat (other side window) also gets seat_cell_side
+  it('seat ending in F has class seat_cell_side', () => {
+    const { container } = render(
+      <SeatCell seatNumber="1F" status="available" onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('seat_cell_side');
+  });
+
+  // Test 3 — Boundary: B-seat does NOT get seat_cell_side
+  it('seat ending in B does not have class seat_cell_side', () => {
+    const { container } = render(
+      <SeatCell seatNumber="1B" status="available" onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_cell_side');
+  });
+
+  // Test 4 — Boundary: C-seat does NOT get seat_cell_side
+  it('seat ending in C does not have class seat_cell_side', () => {
+    const { container } = render(
+      <SeatCell seatNumber="1C" status="available" onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_cell_side');
+  });
+});
+
+describe('CSS token values match cloud_2', () => {
+  const tokensCSS = fs.readFileSync(
+    path.resolve(__dirname, '../../../styles/tokens.css'),
+    'utf-8'
+  );
+
+  // Test 1 — Happy path: available seat uses cloud_2 charcoal
+  it('available seat token is cloud_2 charcoal #4A4D4F', () => {
+    expect(tokensCSS).toContain('--color-seat-available: #4A4D4F');
+  });
+
+  // Test 2 — Occupied seat purple
+  it('occupied seat token is cloud_2 purple #947a9c', () => {
+    expect(tokensCSS).toContain('--color-seat-occupied: #947a9c');
+  });
+
+  // Test 3 — Checked-in gold
+  it('checked-in seat token is cloud_2 gold #C1AA02', () => {
+    expect(tokensCSS).toContain('--color-seat-checked-in: #C1AA02');
+  });
+
+  // Test 4 — Boarded green
+  it('boarded seat token is cloud_2 green #77AE00', () => {
+    expect(tokensCSS).toContain('--color-seat-boarded: #77AE00');
+  });
+
+  // Test 5 — Infant dark green
+  it('infant seat token is darkgreen #006400', () => {
+    expect(tokensCSS).toContain('--color-seat-infant: #006400');
+  });
+
+  // Test 6 — Boundary: exit-available shares same base color as available
+  it('exit-available token matches available charcoal #4A4D4F', () => {
+    expect(tokensCSS).toContain('--color-seat-exit-available: #4A4D4F');
+  });
+
+  // Test 7 — Boundary: exit-occupied shares same base color as occupied
+  it('exit-occupied token matches occupied purple #947a9c', () => {
+    expect(tokensCSS).toContain('--color-seat-exit-occupied: #947a9c');
+  });
+});
+
+describe('SeatCell — SSR and rush overlays', () => {
+  it('renders seat_ssr_wchr badge when ssrs includes WCHR', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5A" status="occupied" ssrs={['WCHR']} onSelect={vi.fn()} />
+    );
+    expect(container.querySelector('.seat_ssr_wchr')).not.toBeNull();
+  });
+  it('does not render seat_ssr_wchr badge when ssrs is empty', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5A" status="occupied" ssrs={[]} onSelect={vi.fn()} />
+    );
+    expect(container.querySelector('.seat_ssr_wchr')).toBeNull();
+  });
+  it('does not render seat_ssr_wchr badge when ssrs does not include WCHR', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5A" status="occupied" ssrs={['DEAF']} onSelect={vi.fn()} />
+    );
+    expect(container.querySelector('.seat_ssr_wchr')).toBeNull();
+  });
+
+  it('has class seat_rush when rushStatus=true', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5A" status="occupied" rushStatus={true} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('seat_rush');
+  });
+  it('does not have class seat_rush when rushStatus=false', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5A" status="occupied" rushStatus={false} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_rush');
+  });
+  it('does not have class seat_rush when rushStatus not provided', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5A" status="occupied" onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_rush');
   });
 });
 

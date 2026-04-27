@@ -4,6 +4,9 @@ import type { AssignSeatCommand } from '@/domain/seat/commands/AssignSeatCommand
 import type { BlockSeatCommand } from '@/domain/seat/commands/BlockSeatCommand';
 import type { UnblockSeatCommand } from '@/domain/seat/commands/UnblockSeatCommand';
 import type { ReseatPassengerCommand } from '@/domain/seat/commands/ReseatPassengerCommand';
+import type { UnassignSeatCommand } from '@/domain/seat/commands/UnassignSeatCommand';
+import type { SwapSeatsCommand } from '@/domain/seat/commands/SwapSeatsCommand';
+import type { ReseatGroupCommand } from '@/domain/seat/commands/ReseatGroupCommand';
 
 function isConflict(err: unknown): boolean {
   if (typeof err !== 'object' || err === null || !('isAxiosError' in err)) return false;
@@ -33,5 +36,17 @@ export class Cloud2SeatCommandAdapter implements ISeatCommandService {
 
   async unblockSeat(command: UnblockSeatCommand): Promise<void> {
     await this.http.post('/ajax/seat_plan/unblock_seat', command);
+  }
+
+  async unassignSeat(command: UnassignSeatCommand): Promise<void> {
+    await this.http.post('/dc/unseat_passenger', command);
+  }
+
+  async swapSeats(command: SwapSeatsCommand): Promise<void> {
+    await this.http.post('/dc/swap_seats', command);
+  }
+
+  async reseatGroup(command: ReseatGroupCommand): Promise<void> {
+    await this.http.post('/dc/reseat_group', command);
   }
 }

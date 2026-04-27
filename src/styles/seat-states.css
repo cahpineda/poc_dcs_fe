@@ -1,8 +1,8 @@
 /* Base seat cell */
 .seat_cell {
   position: relative;
-  width: var(--seat-size);
-  height: var(--seat-size);
+  width: var(--seat-cell-width);
+  height: var(--seat-cell-height);
   border-radius: var(--seat-radius);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
@@ -54,7 +54,7 @@
   right: 1px;
   width: 7px;
   height: 9px;
-  background: var(--color-seat-infant, #f59e0b);
+  background: var(--color-seat-infant);
   border-radius: 2px;
   pointer-events: none;
 }
@@ -65,7 +65,7 @@
   left: 1px;
   width: 9px;
   height: 9px;
-  background: var(--color-seat-blocked, #dc2626);
+  background: var(--color-seat-blocked);
   border-radius: 50%;
   pointer-events: none;
 }

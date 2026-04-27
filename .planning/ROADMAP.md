@@ -20,11 +20,11 @@ None
 - [ ] **Phase 8: Visual Fidelity** - Match cloud_2 visual design: column headers, correct color palette, checked-in/boarded states, legend completeness
 - [x] **Phase 9: Seat Information Overlays** - Passenger name/initials on seats, infant icon, block alert graphic, gender badge
 - [x] **Phase 10: Agent Interaction Completeness** - Click occupied seat → passenger detail, block/unblock UI, reseat UI flow
-- [ ] **Phase 11: Mock Backend Server** - Standalone Express mock server (port 3001) with FL001/FL002 in-memory data for local E2E testing
-- [ ] **Phase 12: Color Palette and Seat Geometry** - Align colors to cloud_2 exact values, proportional seat cell sizing (38×35 / 28×35px)
-- [ ] **Phase 13: Domain Passenger Fields and Unseat** - Real passenger_key, boardingGroup, rushStatus, pnr fields + UNSEAT operation
-- [ ] **Phase 14: Passenger Overlays and Cabin Dividers** - WCHR badge, rush outline, boarding group/PNR in drawer, cabin section dividers
-- [ ] **Phase 15: Advanced Operations** - Seat swap (two-click) and group reseat (multi-select) — closes remaining Category 4 gaps
+- [x] **Phase 11: Mock Backend Server** - Standalone Express mock server (port 3001) with FL001/FL002 in-memory data for local E2E testing
+- [x] **Phase 12: Color Palette and Seat Geometry** - Align colors to cloud_2 exact values, proportional seat cell sizing (38×35 / 28×35px)
+- [x] **Phase 13: Domain Passenger Fields and Unseat** - Real passenger_key, boardingGroup, rushStatus, pnr fields + UNSEAT operation
+- [x] **Phase 14: Passenger Overlays and Cabin Dividers** - WCHR badge, rush outline, boarding group/PNR in drawer, cabin section dividers
+- [x] **Phase 15: Advanced Operations** - Seat swap (two-click) and group reseat (multi-select) — closes remaining Category 4 gaps
 
 ## Phase Details
 
@@ -180,9 +180,10 @@ Plans:
 
 **Wave layout**: Strictly sequential (all modify SeatPlanTab.tsx)
 
-### Phase 11: Mock Backend Server
+### Phase 11: Mock Backend Server ✅
 **Goal**: Standalone Node.js/Express mock server replacing the real cloud_2 backend for local development. Stateful in-memory data covering all 9 seat statuses. Required by phases 12-15 for real HTTP round-trips.
 **Depends on**: Phase 10
+**Completed**: 2026-04-27
 **Plans**: 1 plan
 
 Plans:
@@ -194,13 +195,14 @@ Plans:
 - FL002: narrow-body 2-cabin (J/Y) 4 rows, simpler clean-slate testing
 - In-memory state — no persistence, resets on restart
 
-### Phase 12: Color Palette and Seat Geometry
+### Phase 12: Color Palette and Seat Geometry ✅
 **Goal**: Align React POC colors and seat cell dimensions exactly to cloud_2 values. Category 3 (Design Tokens) 5/15 → 15/15.
 **Depends on**: Phase 11
+**Completed**: 2026-04-27
 **Plans**: 1 plan
 
 Plans:
-- [ ] 12-01: Update tokens.css with exact cloud_2 hex codes (#4A4D4F available, #947a9c occupied, #C1AA02 checked-in, #77AE00 boarded, #006400 infant) + seat geometry (38×35px side, 28×35px middle) (TDD)
+- [x] 12-01: Update tokens.css with exact cloud_2 hex codes (#4A4D4F available, #947a9c occupied, #C1AA02 checked-in, #77AE00 boarded, #006400 infant) + seat geometry (38×35px side, 28×35px middle) (TDD)
 
 **Notes**:
 - `isSideSeat` computed from seat number ending in A or F
@@ -231,16 +233,17 @@ Plans:
 - Rush: orange outline on SeatCell
 - CabinDivider: labeled row inserted between cabin transitions
 
-### Phase 15: Advanced Operations (Swap + Group Reseat)
+### Phase 15: Advanced Operations (Swap + Group Reseat) ✅
 **Goal**: Implement seat swap (two-click flow) and group reseat (multi-select + MOVE). Final Category 4 items. Target: ~95/100 parity score.
 **Depends on**: Phase 14
+**Completed**: 2026-04-27
 **Plans**: 1 plan
 
 Plans:
-- [ ] 15-01: SwapSeatsCommand + ReseatGroupCommand; useSeatSwap two-click state machine; useSeatGroupReseat multi-select; full UX in SeatPlanTab with banners and cancel flows (TDD)
+- [x] 15-01: SwapSeatsCommand + ReseatGroupCommand; useSeatSwap two-click state machine; useSeatGroupReseat multi-select; full UX in SeatPlanTab with banners and cancel flows (TDD)
 
 **Notes**:
 - Swap: click occupied → banner → click second seat → SwapSeatsCommand fires
 - Group reseat: GROUP RESEAT button → group mode → multi-click occupied seats → MOVE GROUP fires ReseatGroupCommand
-- Target: ~200 total tests after this phase
+- 244 total tests, 0 failures after this phase
 

@@ -3,11 +3,15 @@ import { useSeatPlan } from '@/presentation/hooks/useSeatPlan';
 import { useSeatAssign } from '@/presentation/hooks/useSeatAssign';
 import { useSeatBlock, useSeatUnblock } from '@/presentation/hooks/useSeatBlock';
 import { useSeatReseat } from '@/presentation/hooks/useSeatReseat';
+import { useSeatUnassign } from '@/presentation/hooks/useSeatUnassign';
+import { useSeatSwap } from '@/presentation/hooks/useSeatSwap';
+import { useSeatGroupReseat } from '@/presentation/hooks/useSeatGroupReseat';
 import { autoAssignSeat } from '@/domain/seat/autoAssignSeat';
 import { AssignSeatCommand } from '@/domain/seat/commands/AssignSeatCommand';
 import { BlockSeatCommand } from '@/domain/seat/commands/BlockSeatCommand';
 import { UnblockSeatCommand } from '@/domain/seat/commands/UnblockSeatCommand';
 import { ReseatPassengerCommand } from '@/domain/seat/commands/ReseatPassengerCommand';
+import { UnassignSeatCommand } from '@/domain/seat/commands/UnassignSeatCommand';
 import type { Seat } from '@/domain/seat/Seat';
 import { SeatMap } from './SeatMap';
 import { SeatLegend } from './SeatLegend';
@@ -19,10 +23,8 @@ interface SeatPlanTabProps {
 
 const DRAWER_STATUSES = new Set(['occupied', 'exit_row_occupied', 'checked_in', 'boarded', 'blocked']);
 
-// Seat has no passengerId field; synthesize from seat number until a real passenger registry exists.
-// TODO: replace with actual passenger lookup when passenger entity is introduced.
 function resolvePassengerId(seat: Seat): string {
-  return 'PAX-' + seat.number.toString();
+  return seat.passengerKey ?? 'PAX-' + seat.number.toString();
 }
 
 export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
@@ -31,6 +33,7 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
   const [reseatPassengerId, setReseatPassengerId] = useState<string | null>(null);
   const [reseatFromSeat, setReseatFromSeat] = useState<string | null>(null);
   const [reseatPassengerName, setReseatPassengerName] = useState<string | null>(null);
+  const [groupReseatMode, setGroupReseatMode] = useState(false);
   const reseatMode = reseatPassengerId !== null;
 
   const { data: seatPlan, isLoading, error } = useSeatPlan(flightId);
@@ -38,6 +41,10 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
   const { mutate: blockMutate, isPending: blockPending } = useSeatBlock(flightId);
   const { mutate: unblockMutate, isPending: unblockPending } = useSeatUnblock(flightId);
   const reseatMutation = useSeatReseat(flightId);
+  const unassignMutation = useSeatUnassign(flightId);
+  const swapHook = useSeatSwap(flightId);
+  const groupReseatHook = useSeatGroupReseat(flightId);
+  const swapMode = swapHook.firstSeat !== null;
 
   if (isLoading) return <div className="seat_plan_loading">Loading seat map…</div>;
   if (error) return <div className="seat_plan_error">Failed to load seat map</div>;
@@ -102,10 +109,36 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
     setSelectedSeatObj(null);
   }
 
+  function handleUnassign(seat: Seat) {
+    unassignMutation.mutate(
+      UnassignSeatCommand.create({ flightId, seatNumber: seat.number.toString() })
+    );
+    setSelectedSeatObj(null);
+  }
+
   function handleCancelReseat() {
     setReseatPassengerId(null);
     setReseatFromSeat(null);
     setReseatPassengerName(null);
+  }
+
+  function handleSwap(seat: Seat) {
+    swapHook.selectSeat(seat);
+    setSelectedSeatObj(null);
+  }
+
+  function handleGroupReseat() {
+    setGroupReseatMode(true);
+  }
+
+  function handleCancelGroupReseat() {
+    setGroupReseatMode(false);
+    groupReseatHook.cancel();
+  }
+
+  function handleMoveGroup() {
+    groupReseatHook.confirm();
+    setGroupReseatMode(false);
   }
 
   function handleAutoAssign() {
@@ -128,6 +161,19 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
           <button type="button" onClick={handleCancelReseat}>Cancel</button>
         </div>
       )}
+      {swapMode && (
+        <div className="swap_mode_banner" role="status">
+          <span>Swap mode: select second seat to swap</span>
+          <button type="button" onClick={swapHook.cancel}>Cancel</button>
+        </div>
+      )}
+      {groupReseatMode && (
+        <div className="group_reseat_banner" role="status">
+          <span>Group select: click passengers to add to group</span>
+          <button type="button" onClick={handleMoveGroup}>Move group</button>
+          <button type="button" onClick={handleCancelGroupReseat}>Cancel</button>
+        </div>
+      )}
       <SeatMap
         seatPlan={seatPlan}
         selectedSeat={selectedSeat}
@@ -141,6 +187,13 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
         disabled={assignMutation.isPending}
       >
         Auto-assign
+      </button>
+      <button
+        className="group_reseat_btn"
+        type="button"
+        onClick={handleGroupReseat}
+      >
+        Group reseat
       </button>
       {assignMutation.isPending && (
         <div className="seat_assign_pending">Assigning…</div>
@@ -160,8 +213,11 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
         onReseat={handleReseat}
         onBlock={handleBlock}
         onUnblock={handleUnblock}
+        onUnassign={handleUnassign}
+        onSwap={handleSwap}
         blockPending={blockPending}
         unblockPending={unblockPending}
+        unassignPending={unassignMutation.isPending}
       />
     </div>
   );

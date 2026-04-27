@@ -42,6 +42,11 @@ export function mapSeatPlanDTO(dto: unknown): SeatPlanResult {
         hasInfant: Boolean(s.has_infant),
         blockNote: typeof s.block_note === 'string' ? s.block_note : undefined,
         gender: typeof s.gender === 'string' ? (s.gender as 'M' | 'F' | 'U') : undefined,
+        passengerKey: typeof s.passenger_key === 'string' ? s.passenger_key : null,
+        boardingGroup: typeof s.boarding_group === 'number' ? s.boarding_group : null,
+        rushStatus: Boolean(s.rush_status),
+        pnr: typeof s.pnr === 'string' ? s.pnr : null,
+        ssrs: Array.isArray(s.ssrs) ? (s.ssrs as string[]) : [],
       })
     );
     return {

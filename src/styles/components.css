@@ -76,6 +76,29 @@
   cursor: not-allowed;
 }
 
+/* Group reseat button */
+.group_reseat_btn {
+  padding: var(--space-2) var(--space-6);
+  background: var(--color-brand-secondary);
+  color: var(--color-seat-text-light);
+  border: none;
+  border-radius: 4px;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.group_reseat_btn:hover:not(:disabled) {
+  background: var(--color-brand-primary);
+}
+
+.group_reseat_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Gender badge overlay — top-left corner of seat cell */
 .seat_gender_badge {
   position: absolute;
@@ -139,6 +162,49 @@
 
 .passenger_drawer__meta dt { font-weight: 500; color: var(--color-text-muted, #666); }
 .passenger_drawer__meta dd { margin: 0; }
+
+/* WCHR SSR badge — bottom-left corner of seat cell */
+.seat_ssr_wchr {
+  position: absolute;
+  bottom: 1px;
+  left: 1px;
+  width: 8px;
+  height: 8px;
+  background: #0077cc;
+  border-radius: 2px;
+  font-size: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.seat_ssr_wchr::after {
+  content: 'W';
+  color: white;
+  font-weight: bold;
+}
+
+/* Rush status indicator — orange outline */
+.seat_rush {
+  outline: 2px solid #ff6600;
+  outline-offset: -2px;
+}
+
+/* Cabin class divider row */
+.cabin_divider {
+  width: 100%;
+  padding: 2px var(--space-2);
+  background: var(--color-surface-alt);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #555;
+  margin: var(--space-1) 0;
+}
 
 .passenger_drawer__actions {
   display: flex;

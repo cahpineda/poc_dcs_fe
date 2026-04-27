@@ -29,6 +29,7 @@ const defaultProps = {
   onReseat: noop,
   onBlock: noop,
   onUnblock: noop,
+  onUnassign: noop,
 };
 
 describe('PassengerDetailDrawer', () => {
@@ -144,5 +145,81 @@ describe('PassengerDetailDrawer', () => {
   it('Reseat button is disabled when unblockPending=true', () => {
     render(<PassengerDetailDrawer seat={makeSeat({ status: 'occupied' })} {...defaultProps} unblockPending />);
     expect(screen.getByRole('button', { name: /reseat/i })).toBeDisabled();
+  });
+});
+
+describe('PassengerDetailDrawer — boarding group and PNR', () => {
+  it('shows boarding group when boardingGroup is set', () => {
+    const seat = Seat.create({
+      seatNumber: SeatNumber.create('3A'), status: 'checked_in', cabinClass: 'J',
+      passengerName: 'ANA LOPEZ', boardingGroup: 1
+    });
+    render(<PassengerDetailDrawer seat={seat} {...defaultProps} />);
+    expect(screen.getByText(/boarding group/i)).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+  });
+  it('does NOT show boarding group row when boardingGroup is null', () => {
+    const seat = Seat.create({
+      seatNumber: SeatNumber.create('3A'), status: 'occupied', cabinClass: 'Y',
+      passengerName: 'JOHN DOE'
+    });
+    render(<PassengerDetailDrawer seat={seat} {...defaultProps} />);
+    expect(screen.queryByText(/boarding group/i)).not.toBeInTheDocument();
+  });
+  it('shows PNR when pnr is set', () => {
+    const seat = Seat.create({
+      seatNumber: SeatNumber.create('3A'), status: 'occupied', cabinClass: 'Y',
+      passengerName: 'JOHN DOE', pnr: 'ABC123'
+    });
+    render(<PassengerDetailDrawer seat={seat} {...defaultProps} />);
+    expect(screen.getByText(/pnr/i)).toBeInTheDocument();
+    expect(screen.getByText('ABC123')).toBeInTheDocument();
+  });
+  it('does NOT show PNR row when pnr is null', () => {
+    const seat = Seat.create({
+      seatNumber: SeatNumber.create('3A'), status: 'occupied', cabinClass: 'Y',
+      passengerName: 'JOHN DOE'
+    });
+    render(<PassengerDetailDrawer seat={seat} {...defaultProps} />);
+    expect(screen.queryByText(/pnr/i)).not.toBeInTheDocument();
+  });
+});
+
+describe('PassengerDetailDrawer — UNSEAT button', () => {
+  it('shows Unseat button for occupied seat', () => {
+    const seat = makeSeat({ status: 'occupied' });
+    render(
+      <PassengerDetailDrawer
+        seat={seat} onClose={vi.fn()} onReseat={vi.fn()}
+        onBlock={vi.fn()} onUnblock={vi.fn()} onUnassign={vi.fn()}
+      />
+    );
+    expect(screen.getByRole('button', { name: /unseat/i })).toBeInTheDocument();
+  });
+
+  it('Unseat button disabled when unassignPending=true', () => {
+    const seat = makeSeat({ status: 'occupied' });
+    render(
+      <PassengerDetailDrawer
+        seat={seat} onClose={vi.fn()} onReseat={vi.fn()}
+        onBlock={vi.fn()} onUnblock={vi.fn()} onUnassign={vi.fn()}
+        unassignPending={true}
+      />
+    );
+    expect(screen.getByRole('button', { name: /unseat/i })).toBeDisabled();
+  });
+
+  it('calls onUnassign with seat when Unseat clicked', async () => {
+    const user = userEvent.setup();
+    const onUnassign = vi.fn();
+    const seat = makeSeat({ status: 'occupied' });
+    render(
+      <PassengerDetailDrawer
+        seat={seat} onClose={vi.fn()} onReseat={vi.fn()}
+        onBlock={vi.fn()} onUnblock={vi.fn()} onUnassign={onUnassign}
+      />
+    );
+    await user.click(screen.getByRole('button', { name: /unseat/i }));
+    expect(onUnassign).toHaveBeenCalledWith(seat);
   });
 });

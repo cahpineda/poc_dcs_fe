@@ -3,6 +3,7 @@ import { AssignSeatCommand } from '../AssignSeatCommand';
 import { BlockSeatCommand } from '../BlockSeatCommand';
 import { UnblockSeatCommand } from '../UnblockSeatCommand';
 import { ReseatPassengerCommand } from '../ReseatPassengerCommand';
+import { UnassignSeatCommand } from '../UnassignSeatCommand';
 
 describe('AssignSeatCommand', () => {
   it('creates with valid fields', () => {
@@ -77,5 +78,23 @@ describe('ReseatPassengerCommand', () => {
   it('throws if passengerId is empty', () => {
     expect(() => ReseatPassengerCommand.create({ passengerId: '', fromSeat: '12A', toSeat: '14C', flightId: 'FL001' }))
       .toThrow('passengerId is required');
+  });
+});
+
+describe('UnassignSeatCommand', () => {
+  it('creates with valid flightId and seatNumber', () => {
+    const cmd = UnassignSeatCommand.create({ flightId: 'FL001', seatNumber: '1A' });
+    expect(cmd.flightId).toBe('FL001');
+    expect(cmd.seatNumber).toBe('1A');
+  });
+
+  it('throws if flightId is missing/empty', () => {
+    expect(() => UnassignSeatCommand.create({ flightId: '', seatNumber: '1A' }))
+      .toThrow('flightId is required');
+  });
+
+  it('throws if seatNumber is missing/empty', () => {
+    expect(() => UnassignSeatCommand.create({ flightId: 'FL001', seatNumber: '' }))
+      .toThrow('seatNumber is required');
   });
 });

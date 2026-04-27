@@ -3,6 +3,49 @@ import { SeatNumber } from '../SeatNumber';
 import { Seat } from '../Seat';
 import type { SeatStatus } from '../SeatStatus';
 
+describe('passenger extended fields', () => {
+  it('exposes passengerKey getter (default null)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' });
+    expect(seat.passengerKey).toBeNull();
+  });
+  it('exposes passengerKey when provided', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1B'), status: 'occupied', cabinClass: 'Y', passengerKey: 'PAX-001' });
+    expect(seat.passengerKey).toBe('PAX-001');
+  });
+  it('exposes boardingGroup getter (default null)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' });
+    expect(seat.boardingGroup).toBeNull();
+  });
+  it('exposes boardingGroup when provided', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1B'), status: 'occupied', cabinClass: 'Y', boardingGroup: 2 });
+    expect(seat.boardingGroup).toBe(2);
+  });
+  it('exposes rushStatus (default false)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' });
+    expect(seat.rushStatus).toBe(false);
+  });
+  it('exposes rushStatus=true when set', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'occupied', cabinClass: 'Y', rushStatus: true });
+    expect(seat.rushStatus).toBe(true);
+  });
+  it('exposes pnr getter (default null)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' });
+    expect(seat.pnr).toBeNull();
+  });
+  it('exposes pnr when provided', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1B'), status: 'occupied', cabinClass: 'Y', pnr: 'ABC123' });
+    expect(seat.pnr).toBe('ABC123');
+  });
+  it('exposes ssrs (default empty array)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' });
+    expect(seat.ssrs).toEqual([]);
+  });
+  it('exposes ssrs array when provided', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'occupied', cabinClass: 'Y', ssrs: ['WCHR'] });
+    expect(seat.ssrs).toEqual(['WCHR']);
+  });
+});
+
 describe('passengerInitials', () => {
   it('returns first+last char of two-word name', () => {
     const seat = Seat.create({

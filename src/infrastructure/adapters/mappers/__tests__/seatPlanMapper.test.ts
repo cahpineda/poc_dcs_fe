@@ -138,6 +138,28 @@ describe('seatPlanMapper', () => {
     expect(result.rows[0].seats[1].blockNote).toBe('Crew rest');
   });
 
+  it('maps passenger_key, boarding_group, rush_status, pnr, ssrs from DTO', () => {
+    const dto = {
+      flight_id: 'FL001', is_upper_deck: false,
+      seat_rows: [{
+        row_number: 1, is_exit_row: false,
+        seats: [{
+          seat_number: '1B', status: 'O', cabin_class: 'Y',
+          passenger_name: 'JOHN DOE', has_infant: false, block_note: null,
+          gender: 'M', passenger_key: 'PAX-001', boarding_group: 1,
+          rush_status: true, pnr: 'ABC123', ssrs: ['WCHR']
+        }]
+      }]
+    };
+    const result = mapSeatPlanDTO(dto);
+    const seat = result.getSeat('1B')!;
+    expect(seat.passengerKey).toBe('PAX-001');
+    expect(seat.boardingGroup).toBe(1);
+    expect(seat.rushStatus).toBe(true);
+    expect(seat.pnr).toBe('ABC123');
+    expect(seat.ssrs).toEqual(['WCHR']);
+  });
+
   it('maps passenger_name from DTO to Seat.passengerInitials', () => {
     const dto = {
       flight_id: 'FX1',
