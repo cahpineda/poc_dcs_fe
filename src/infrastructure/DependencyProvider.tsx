@@ -5,11 +5,9 @@ import type { ReactNode } from 'react';
 import type { ISeatPricingService } from '@/application/ports';
 import { Cloud2SeatPlanAdapter } from './adapters/Cloud2SeatPlanAdapter';
 import { Cloud2SeatCommandAdapter } from './adapters/Cloud2SeatCommandAdapter';
-import { MockSeatPlanAdapter } from './adapters/MockSeatPlanAdapter';
-import { MockSeatCommandAdapter } from './adapters/MockSeatCommandAdapter';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001',
   withCredentials: true,
 });
 
@@ -19,20 +17,14 @@ const queryClient = new QueryClient({
   },
 });
 
-// Pricing is deferred to Phase 4 — stub remains
 const stubPricingService: ISeatPricingService = {
   getSeatPricing: async () => { throw new Error('Not implemented'); },
 };
 
-// Single DIP wiring point — ONLY place where adapters are instantiated
-// DEV: MockSeatPlanAdapter returns hardcoded data so the UI can be previewed without cloud_2 API
+// Single DIP wiring point — always uses real adapters against the mock server (port 3001)
 export const services = {
-  seatQuery: import.meta.env.DEV
-    ? new MockSeatPlanAdapter()
-    : new Cloud2SeatPlanAdapter(axiosInstance),
-  seatCommand: import.meta.env.DEV
-    ? new MockSeatCommandAdapter()
-    : new Cloud2SeatCommandAdapter(axiosInstance),
+  seatQuery: new Cloud2SeatPlanAdapter(axiosInstance),
+  seatCommand: new Cloud2SeatCommandAdapter(axiosInstance),
   seatPricing: stubPricingService,
 } as const;
 
