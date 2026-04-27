@@ -95,15 +95,15 @@ Plans:
 - [ ] 05-04: SeatPlanTab wired with assign mutation + auto-assign button + MockSeatCommandAdapter dev preview (auto)
 
 ### Phase 6: Design Token Extraction
-**Goal**: Extract DCS visual design tokens from cloud_2 CSS/templates and apply to React app. Foundation for future centralized design system.
+**Goal**: Create DCS seat map design token system (CSS custom properties) and apply visual styles to all seat map components.
 **Depends on**: Phase 4
 **Research**: Unlikely
 **Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: Extract color palette and typography from cloud_2 DCS CSS
-- [ ] 06-02: Extract spacing, border, shadow tokens and create CSS custom properties
-- [ ] 06-03: Apply tokens to seat map components and document inventory
+- [ ] 06-01: Color palette + seat-status tokens as CSS custom properties (tokens.css + seat-states.css)
+- [ ] 06-02: Layout, component, and feedback stylesheets (layout.css + components.css + feedback.css)
+- [ ] 06-03: Wire styles into app via main.tsx + align component class names + human verify in browser
 
 ### Phase 7: Integration and Validation
 **Goal**: End-to-end validation against live cloud_2, feature parity audit, performance baseline, POC sign-off.
