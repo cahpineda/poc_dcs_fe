@@ -17,7 +17,7 @@ None
 - [x] **Phase 5: Seat Operations** - Seat assignment, blocking, reassignment, zone-balanced seating commands
 - [x] **Phase 6: Design Token Extraction** - Extract DCS visual tokens from cloud_2 CSS for future design system
 - [x] **Phase 7: Integration and Validation** - End-to-end validation against cloud_2, feature parity audit
-- [ ] **Phase 8: Visual Fidelity** - Match cloud_2 visual design: column headers, correct color palette, checked-in/boarded states, legend completeness
+- [x] **Phase 8: Visual Fidelity** - Match cloud_2 visual design: column headers, correct color palette, checked-in/boarded states, legend completeness
 - [x] **Phase 9: Seat Information Overlays** - Passenger name/initials on seats, infant icon, block alert graphic, gender badge
 - [x] **Phase 10: Agent Interaction Completeness** - Click occupied seat → passenger detail, block/unblock UI, reseat UI flow
 - [x] **Phase 11: Mock Backend Server** - Standalone Express mock server (port 3001) with FL001/FL002 in-memory data for local E2E testing
@@ -141,16 +141,17 @@ Plans:
 - `docs/FEATURE-PARITY.md`: full 15-feature audit with deferred backlog
 - `docs/POC-SUMMARY.md`: stakeholder-ready summary with 81 tests, 0 errors, next steps
 
-### Phase 8: Visual Fidelity
+### Phase 8: Visual Fidelity ✅
 **Goal**: Close the visual gap between the React POC and cloud_2. Match color palette, add missing seat states (checked_in, boarded), add column headers (A-F), fix legend, align cell sizes.
 **Depends on**: Phase 7
+**Completed**: 2026-04-27
 **Audit score to beat**: Grid 18/30, States 28/40, Tokens 5/15
 **Plans**: 3 plans
 
 Plans:
-- [ ] 08-01: Extend SeatStatus — add `checked_in` + `boarded`; update STATUS_MAP (C/D codes), STATUS_CLASS, Seat.isOccupied(), CSS classes (TDD)
-- [ ] 08-02: SeatColumnHeaders component — sticky A-F labels above seat grid, integrated into CabinDeck (TDD)
-- [ ] 08-03: Color palette alignment to cloud_2 (all tokens), cell geometry 30px, legend completeness (9 states) (auto)
+- [x] 08-01: Extend SeatStatus — add `checked_in` + `boarded`; update STATUS_MAP (C/D codes), STATUS_CLASS, Seat.isOccupied(), CSS classes (TDD)
+- [x] 08-02: SeatColumnHeaders component — sticky A-F labels above seat grid, integrated into CabinDeck (TDD)
+- [x] 08-03: Color palette alignment to cloud_2 (all tokens), cell geometry 30px, legend completeness (9 states) (auto)
 
 **Wave layout**: 08-01 and 08-02 parallel → 08-03 depends on both
 
@@ -187,7 +188,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 11-01: Express server (port 3001) + FL001/FL002 in-memory data + GET seat_plan/occupancy + POST assign/block/unblock/reseat/unseat/swap/reseat_group + CORS for localhost:5174
+- [x] 11-01: Express server (port 3001) + FL001/FL002 in-memory data + GET seat_plan/occupancy + POST assign/block/unblock/reseat/unseat/swap/reseat_group + CORS for localhost:5174
 
 **Notes**:
 - `npm run server` starts from project root
@@ -208,25 +209,27 @@ Plans:
 - `isSideSeat` computed from seat number ending in A or F
 - `.seat_cell_side` class adds 10px width to side columns
 
-### Phase 13: Domain Passenger Fields and Unseat Operation
+### Phase 13: Domain Passenger Fields and Unseat Operation ✅
 **Goal**: Add real `passenger_key` + extended fields (boardingGroup, rushStatus, pnr) to Seat domain. Add UNSEAT operation end-to-end. Category 1 +5, Category 4 +5.
 **Depends on**: Phase 11
+**Completed**: 2026-04-27
 **Plans**: 1 plan
 
 Plans:
-- [ ] 13-01: Seat.passengerKey + boardingGroup + rushStatus + pnr fields; UnassignSeatCommand; useSeatUnassign hook; UNSEAT button in PassengerDetailDrawer (TDD)
+- [x] 13-01: Seat.passengerKey + boardingGroup + rushStatus + pnr fields; UnassignSeatCommand; useSeatUnassign hook; UNSEAT button in PassengerDetailDrawer (TDD)
 
 **Notes**:
 - Replaces `resolvePassengerId()` workaround with real `seat.passengerKey`
 - UNSEAT calls POST /dc/unseat_passenger on mock server
 
-### Phase 14: Passenger Overlays and Cabin Dividers
+### Phase 14: Passenger Overlays and Cabin Dividers ✅
 **Goal**: Add WCHR SSR badge, rush status outline, boarding group/PNR in drawer, cabin class section dividers. Category 2 +4, Category 5 +4.
 **Depends on**: Phase 13
+**Completed**: 2026-04-27
 **Plans**: 1 plan
 
 Plans:
-- [ ] 14-01: SeatCell WCHR badge + rush outline; PassengerDetailDrawer boarding group + PNR; CabinDeck cabin dividers between F/J/Y (TDD)
+- [x] 14-01: SeatCell WCHR badge + rush outline; PassengerDetailDrawer boarding group + PNR; CabinDeck cabin dividers between F/J/Y (TDD)
 
 **Notes**:
 - WCHR badge: 'W' at bottom-right of cell when ssrs includes 'WCHR'
