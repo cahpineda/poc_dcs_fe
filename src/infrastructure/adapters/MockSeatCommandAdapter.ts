@@ -10,19 +10,19 @@ export class MockSeatCommandAdapter implements ISeatCommandService {
     return new Promise<void>((resolve) => setTimeout(resolve, 300));
   }
 
-  async assignSeat(_command: AssignSeatCommand): Promise<void> {
+  async assignSeat(_: AssignSeatCommand): Promise<void> {
     await this.delay();
   }
 
-  async blockSeat(_command: BlockSeatCommand): Promise<void> {
+  async blockSeat(_: BlockSeatCommand): Promise<void> {
     await this.delay();
   }
 
-  async unblockSeat(_command: UnblockSeatCommand): Promise<void> {
+  async unblockSeat(_: UnblockSeatCommand): Promise<void> {
     await this.delay();
   }
 
-  async reseatPassenger(_command: ReseatPassengerCommand): Promise<void> {
+  async reseatPassenger(_: ReseatPassengerCommand): Promise<void> {
     await this.delay();
   }
 }

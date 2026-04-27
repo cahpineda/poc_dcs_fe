@@ -1,0 +1,44 @@
+{
+  "project": {
+    "name": "poc_dcs_fe",
+    "version": "1.0.0"
+  },
+  "modelProfile": "intermediate",
+  "mode": "interactive",
+  "planningDepth": "standard",
+  "profiles": {
+    "intermediate": {
+      "description": "Balanced cost/quality: Sonnet for all roles",
+      "research": "sonnet",
+      "planning": "sonnet",
+      "execution": "sonnet",
+      "debug": "sonnet",
+      "verification": "sonnet"
+    },
+    "quality": {
+      "description": "Maximum quality, higher cost",
+      "research": "sonnet",
+      "planning": "opus",
+      "execution": "opus",
+      "verification": "sonnet"
+    }
+  },
+  "features": {
+    "parallelResearch": true,
+    "waveExecution": true,
+    "planChecker": false,
+    "executorAgent": true,
+    "maxConcurrentAgents": 3,
+    "autoWiringCheck": true,
+    "autoVerify": false,
+    "tdd": true
+  },
+  "contextBudgets": {
+    "orchestrator": 40,
+    "agent": 50
+  },
+  "memory": {
+    "enabled": true,
+    "autoBootstrap": true
+  }
+}

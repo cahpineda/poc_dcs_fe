@@ -7,3 +7,4 @@ export { CabinDeck } from './CabinDeck';
 export { DeckToggle } from './DeckToggle';
 export { SeatMap } from './SeatMap';
 export { SeatPlanTab } from './SeatPlanTab';
+export { SeatColumnHeaders } from './SeatColumnHeaders';

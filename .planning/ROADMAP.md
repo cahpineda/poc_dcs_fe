@@ -14,9 +14,17 @@ None
 - [x] **Phase 2: React Project Scaffold** - Bootstrap React + Vite + TypeScript with screaming architecture folder structure
 - [x] **Phase 3: API Adapter Layer** - Hexagonal port/adapter layer connecting React to cloud_2 REST APIs
 - [x] **Phase 4: Seat Map UI** - Core seat map visualization with cabin layout, seat status, multi-deck
-- [ ] **Phase 5: Seat Operations** - Seat assignment, blocking, reassignment, zone-balanced seating commands
+- [x] **Phase 5: Seat Operations** - Seat assignment, blocking, reassignment, zone-balanced seating commands
 - [x] **Phase 6: Design Token Extraction** - Extract DCS visual tokens from cloud_2 CSS for future design system
-- [ ] **Phase 7: Integration and Validation** - End-to-end validation against cloud_2, feature parity audit
+- [x] **Phase 7: Integration and Validation** - End-to-end validation against cloud_2, feature parity audit
+- [ ] **Phase 8: Visual Fidelity** - Match cloud_2 visual design: column headers, correct color palette, checked-in/boarded states, legend completeness
+- [x] **Phase 9: Seat Information Overlays** - Passenger name/initials on seats, infant icon, block alert graphic, gender badge
+- [x] **Phase 10: Agent Interaction Completeness** - Click occupied seat → passenger detail, block/unblock UI, reseat UI flow
+- [ ] **Phase 11: Mock Backend Server** - Standalone Express mock server (port 3001) with FL001/FL002 in-memory data for local E2E testing
+- [ ] **Phase 12: Color Palette and Seat Geometry** - Align colors to cloud_2 exact values, proportional seat cell sizing (38×35 / 28×35px)
+- [ ] **Phase 13: Domain Passenger Fields and Unseat** - Real passenger_key, boardingGroup, rushStatus, pnr fields + UNSEAT operation
+- [ ] **Phase 14: Passenger Overlays and Cabin Dividers** - WCHR badge, rush outline, boarding group/PNR in drawer, cabin section dividers
+- [ ] **Phase 15: Advanced Operations** - Seat swap (two-click) and group reseat (multi-select) — closes remaining Category 4 gaps
 
 ## Phase Details
 
@@ -82,37 +90,157 @@ Plans:
 - MockSeatPlanAdapter activated via `import.meta.env.DEV` in DependencyProvider (dev-only)
 - Dev preview runs at localhost:5174 with 2 rows × 6 seats covering all visual states
 
-### Phase 5: Seat Operations
+### Phase 5: Seat Operations ✅
 **Goal**: Command handlers and UI interactions for seat assignment, blocking, reassignment, and zone-balanced seating.
 **Depends on**: Phase 4
-**Research**: Unlikely
-**Plans**: 4 plans
+**Completed**: 2026-04-27
+**Plans**: 4 plans (24 tests — 81 total)
 
 Plans:
-- [ ] 05-01: Typed command value objects (AssignSeatCommand, BlockSeatCommand, UnblockSeatCommand, ReseatPassengerCommand) + port type safety (TDD)
-- [ ] 05-02: useSeatAssign + useSeatBlock + useSeatUnblock mutation hooks with cache invalidation (TDD)
-- [ ] 05-03: autoAssignSeat zone-balanced pure domain algorithm (TDD)
-- [ ] 05-04: SeatPlanTab wired with assign mutation + auto-assign button + MockSeatCommandAdapter dev preview (auto)
+- [x] 05-01: Typed command value objects (AssignSeatCommand, BlockSeatCommand, UnblockSeatCommand, ReseatPassengerCommand) + port type safety (TDD)
+- [x] 05-02: useSeatAssign + useSeatBlock + useSeatUnblock mutation hooks with cache invalidation (TDD)
+- [x] 05-03: autoAssignSeat zone-balanced pure domain algorithm (TDD)
+- [x] 05-04: SeatPlanTab wired with assign mutation + auto-assign button + MockSeatCommandAdapter dev preview (auto)
 
-### Phase 6: Design Token Extraction
+**Notes**:
+- Command VOs use private constructor + static `create()` factory pattern for port-boundary validation
+- `useSeatAssign`/`useSeatBlock`/`useSeatUnblock` invalidate `['seatPlan', flightId]` on success
+- `autoAssignSeat` zone scoring: window seats preferred at low occupancy, aisle at high occupancy
+- `MockSeatCommandAdapter` resolves after 300ms delay (realistic dev preview)
+
+### Phase 6: Design Token Extraction ✅
 **Goal**: Create DCS seat map design token system (CSS custom properties) and apply visual styles to all seat map components.
 **Depends on**: Phase 4
-**Research**: Unlikely
+**Completed**: 2026-04-27
 **Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: Color palette + seat-status tokens as CSS custom properties (tokens.css + seat-states.css)
-- [ ] 06-02: Layout, component, and feedback stylesheets (layout.css + components.css + feedback.css)
-- [ ] 06-03: Wire styles into app via main.tsx + align component class names + human verify in browser
+- [x] 06-01: Color palette + seat-status tokens as CSS custom properties (tokens.css + seat-states.css)
+- [x] 06-02: Layout, component, and feedback stylesheets (layout.css + components.css + feedback.css)
+- [x] 06-03: Wire styles into app via main.tsx + align component class names + human verify in browser
 
-### Phase 7: Integration and Validation
+**Notes**:
+- 5 focused stylesheets with barrel import via `src/styles/index.css`
+- Build bundles 5.21 kB CSS (1.35 kB gzip)
+- AisleGap class: `aisle_gap` (not `aisle_spacer`)
+- Exit row legend class: `seat_exit_row_available` (not `seat_exit`)
+
+### Phase 7: Integration and Validation ✅
 **Goal**: End-to-end validation against live cloud_2, feature parity audit, performance baseline, POC sign-off.
 **Depends on**: Phase 5, Phase 6
-**Research**: Unlikely
+**Completed**: 2026-04-27
 **Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: Integration tests against cloud_2 API (real endpoint smoke tests)
-- [ ] 07-02: Feature parity audit — cloud_2 DCS vs React POC checklist
-- [ ] 07-03: Performance baseline and POC documentation for team review
+- [x] 07-01: Integration smoke tests against cloud_2 API (`describe.skipIf(!INTEGRATION_TESTS)` guard, real adapter instances)
+- [x] 07-02: Feature parity audit — all 15 cloud_2 features mapped to status (10✅ 2⚠️ 3🔲 1❌)
+- [x] 07-03: POC summary doc — architecture decisions, live metrics, next steps for stakeholder sign-off
+
+**Notes**:
+- Integration tests skip in CI, runnable with `INTEGRATION_TESTS=true VITE_API_BASE_URL=http://cloud2 npm test`
+- `docs/FEATURE-PARITY.md`: full 15-feature audit with deferred backlog
+- `docs/POC-SUMMARY.md`: stakeholder-ready summary with 81 tests, 0 errors, next steps
+
+### Phase 8: Visual Fidelity
+**Goal**: Close the visual gap between the React POC and cloud_2. Match color palette, add missing seat states (checked_in, boarded), add column headers (A-F), fix legend, align cell sizes.
+**Depends on**: Phase 7
+**Audit score to beat**: Grid 18/30, States 28/40, Tokens 5/15
+**Plans**: 3 plans
+
+Plans:
+- [ ] 08-01: Extend SeatStatus — add `checked_in` + `boarded`; update STATUS_MAP (C/D codes), STATUS_CLASS, Seat.isOccupied(), CSS classes (TDD)
+- [ ] 08-02: SeatColumnHeaders component — sticky A-F labels above seat grid, integrated into CabinDeck (TDD)
+- [ ] 08-03: Color palette alignment to cloud_2 (all tokens), cell geometry 30px, legend completeness (9 states) (auto)
+
+**Wave layout**: 08-01 and 08-02 parallel → 08-03 depends on both
+
+### Phase 9: Seat Information Overlays ✅
+**Goal**: Display passenger context directly on seat cells — name/initials on occupied seats, infant icon, block alert graphic, gender badge — matching cloud_2 agent UX.
+**Depends on**: Phase 8
+**Completed**: 2026-04-27
+**Plans**: 3 plans (33 new tests — 124 total)
+
+Plans:
+- [x] 09-01: Passenger initials overlay — extend Seat domain + seatPlanMapper + SeatCell to show 2-char initials on occupied seats (TDD)
+- [x] 09-02: Infant indicator + block alert icon — absolute-positioned overlays in SeatCell (TDD)
+- [x] 09-03: Gender badge — M/F/U dot overlay at top-left of cell, color-coded (TDD)
+
+**Wave layout**: Sequential (all touch Seat.ts + SeatCell.tsx)
+
+### Phase 10: Agent Interaction Completeness ✅
+**Goal**: Complete the agent workflow interactions — click occupied seat → passenger detail drawer, block/unblock UI, reseat flow.
+**Depends on**: Phase 9
+**Completed**: 2026-04-27
+**Plans**: 3 plans (47 new tests — 171 total)
+
+Plans:
+- [x] 10-01: PassengerDetailDrawer — slide-in panel on occupied seat click, passenger info + action stubs (TDD)
+- [x] 10-02: Block/Unblock wiring — connect useSeatBlock/useSeatUnblock to drawer buttons, pending state (TDD)
+- [x] 10-03: Reseat flow — useSeatReseat hook + reseatMode prop threading + banner + ReseatPassengerCommand (TDD)
+
+**Wave layout**: Strictly sequential (all modify SeatPlanTab.tsx)
+
+### Phase 11: Mock Backend Server
+**Goal**: Standalone Node.js/Express mock server replacing the real cloud_2 backend for local development. Stateful in-memory data covering all 9 seat statuses. Required by phases 12-15 for real HTTP round-trips.
+**Depends on**: Phase 10
+**Plans**: 1 plan
+
+Plans:
+- [ ] 11-01: Express server (port 3001) + FL001/FL002 in-memory data + GET seat_plan/occupancy + POST assign/block/unblock/reseat/unseat/swap/reseat_group + CORS for localhost:5174
+
+**Notes**:
+- `npm run server` starts from project root
+- FL001: wide-body 3-cabin (F/J/Y) 6 rows, all 9 seat statuses, gender/infant/SSR/rush scenarios
+- FL002: narrow-body 2-cabin (J/Y) 4 rows, simpler clean-slate testing
+- In-memory state — no persistence, resets on restart
+
+### Phase 12: Color Palette and Seat Geometry
+**Goal**: Align React POC colors and seat cell dimensions exactly to cloud_2 values. Category 3 (Design Tokens) 5/15 → 15/15.
+**Depends on**: Phase 11
+**Plans**: 1 plan
+
+Plans:
+- [ ] 12-01: Update tokens.css with exact cloud_2 hex codes (#4A4D4F available, #947a9c occupied, #C1AA02 checked-in, #77AE00 boarded, #006400 infant) + seat geometry (38×35px side, 28×35px middle) (TDD)
+
+**Notes**:
+- `isSideSeat` computed from seat number ending in A or F
+- `.seat_cell_side` class adds 10px width to side columns
+
+### Phase 13: Domain Passenger Fields and Unseat Operation
+**Goal**: Add real `passenger_key` + extended fields (boardingGroup, rushStatus, pnr) to Seat domain. Add UNSEAT operation end-to-end. Category 1 +5, Category 4 +5.
+**Depends on**: Phase 11
+**Plans**: 1 plan
+
+Plans:
+- [ ] 13-01: Seat.passengerKey + boardingGroup + rushStatus + pnr fields; UnassignSeatCommand; useSeatUnassign hook; UNSEAT button in PassengerDetailDrawer (TDD)
+
+**Notes**:
+- Replaces `resolvePassengerId()` workaround with real `seat.passengerKey`
+- UNSEAT calls POST /dc/unseat_passenger on mock server
+
+### Phase 14: Passenger Overlays and Cabin Dividers
+**Goal**: Add WCHR SSR badge, rush status outline, boarding group/PNR in drawer, cabin class section dividers. Category 2 +4, Category 5 +4.
+**Depends on**: Phase 13
+**Plans**: 1 plan
+
+Plans:
+- [ ] 14-01: SeatCell WCHR badge + rush outline; PassengerDetailDrawer boarding group + PNR; CabinDeck cabin dividers between F/J/Y (TDD)
+
+**Notes**:
+- WCHR badge: 'W' at bottom-right of cell when ssrs includes 'WCHR'
+- Rush: orange outline on SeatCell
+- CabinDivider: labeled row inserted between cabin transitions
+
+### Phase 15: Advanced Operations (Swap + Group Reseat)
+**Goal**: Implement seat swap (two-click flow) and group reseat (multi-select + MOVE). Final Category 4 items. Target: ~95/100 parity score.
+**Depends on**: Phase 14
+**Plans**: 1 plan
+
+Plans:
+- [ ] 15-01: SwapSeatsCommand + ReseatGroupCommand; useSeatSwap two-click state machine; useSeatGroupReseat multi-select; full UX in SeatPlanTab with banners and cancel flows (TDD)
+
+**Notes**:
+- Swap: click occupied → banner → click second seat → SwapSeatsCommand fires
+- Group reseat: GROUP RESEAT button → group mode → multi-click occupied seats → MOVE GROUP fires ReseatGroupCommand
+- Target: ~200 total tests after this phase
 

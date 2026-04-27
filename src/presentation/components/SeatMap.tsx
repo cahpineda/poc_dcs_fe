@@ -6,10 +6,11 @@ import { DeckToggle } from './DeckToggle';
 interface SeatMapProps {
   seatPlan: SeatPlanResult;
   selectedSeat?: string;
+  reseatMode?: boolean;
   onSeatSelect: (seatNumber: string) => void;
 }
 
-export function SeatMap({ seatPlan, selectedSeat, onSeatSelect }: SeatMapProps) {
+export function SeatMap({ seatPlan, selectedSeat, reseatMode = false, onSeatSelect }: SeatMapProps) {
   const [activeDeck, setActiveDeck] = useState<'lower' | 'upper'>('lower');
 
   return (
@@ -22,6 +23,7 @@ export function SeatMap({ seatPlan, selectedSeat, onSeatSelect }: SeatMapProps) 
       <CabinDeck
         rows={seatPlan.rows}
         selectedSeat={selectedSeat}
+        reseatMode={reseatMode}
         onSeatSelect={onSeatSelect}
       />
     </div>

@@ -45,6 +45,28 @@
   flex-shrink: 0;
 }
 
+/* Column headers above seat grid (mirrors cloud_2 seat_plan_column_labels) */
+.seat_column_headers {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: var(--seat-gap);
+  padding-left: calc(1.5rem + var(--seat-gap));
+  padding-bottom: var(--space-1);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  color: var(--color-seat-text-dark);
+}
+
+.column_label {
+  width: var(--seat-size);
+  text-align: center;
+  flex-shrink: 0;
+}
+
 /* Loading / error states */
 .seat_plan_loading,
 .seat_plan_error {
