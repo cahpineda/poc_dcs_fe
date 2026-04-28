@@ -19,9 +19,24 @@ export function SeatRow({ row, selectedSeat, reseatMode = false, activePassenger
   const filters = activeFilters ?? new Set<SeatFilterId>();
   const className = ['cabin_row', row.isExitRow ? 'exit_row' : ''].filter(Boolean).join(' ');
 
+  const sideMarkerClass = row.isExitRow
+    ? 'wing_exit_marker'
+    : row.isWingZone
+      ? 'wing_zone_block'
+      : 'wing_exit_placeholder';
+
+  const firstSeatNum = row.seats[0]?.number.toString() ?? '';
+  const lastSeatNum  = row.seats[row.seats.length - 1]?.number.toString() ?? '';
+  const hasLeftWindow  = /A$/.test(firstSeatNum);
+  const hasRightWindow = /F$/.test(lastSeatNum);
+
   return (
     <div className={className}>
+      <span className={sideMarkerClass} aria-hidden="true" />
       <span className="row_number row_number_left">{row.rowNumber}</span>
+      {hasLeftWindow && (
+        <img className="row_window_icon" src="/window.svg" alt="" aria-hidden="true" />
+      )}
       {row.seats.map((seat, idx) => (
         <>
           <SeatCell
@@ -30,7 +45,6 @@ export function SeatRow({ row, selectedSeat, reseatMode = false, activePassenger
             status={seat.status}
             isExitRow={seat.isExitRow()}
             isSelected={seat.number.toString() === selectedSeat}
-
             hasInfant={seat.hasInfant}
             blockNote={seat.blockNote ?? undefined}
             gender={seat.gender}
@@ -46,7 +60,11 @@ export function SeatRow({ row, selectedSeat, reseatMode = false, activePassenger
           )}
         </>
       ))}
+      {hasRightWindow && (
+        <img className="row_window_icon" src="/window.svg" alt="" aria-hidden="true" />
+      )}
       <span className="row_number row_number_right">{row.rowNumber}</span>
+      <span className={sideMarkerClass} aria-hidden="true" />
     </div>
   );
 }

@@ -15,7 +15,7 @@ const STATUS_CLASS: Record<SeatStatus, string> = {
   occupied: 'seat_occupied',
   blocked: 'seat_blocked',
   exit_row_available: 'seat_exit_row_available',
-  exit_row_occupied: 'seat_exit_row_occupied',
+  exit_row_occupied: 'seat_occupied',
   unavailable: 'seat_unavailable',
   infant_occupied: 'seat_infant_occupied',
   checked_in: 'seat_checked_in',

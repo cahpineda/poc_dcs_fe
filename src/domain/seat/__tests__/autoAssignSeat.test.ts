@@ -17,6 +17,7 @@ function buildPlan(seats: { seatNumber: string; status: SeatStatus; cabinClass?:
       {
         rowNumber: 1,
         isExitRow: false,
+        isWingZone: false,
         seats: seats.map((s) => makeSeat(s.seatNumber, s.status, s.cabinClass)),
       },
     ],
@@ -68,6 +69,7 @@ describe('autoAssignSeat', () => {
         {
           rowNumber: 1,
           isExitRow: false,
+          isWingZone: false,
           seats: [
             makeSeat('1A', 'available', 'C'),
             makeSeat('1B', 'available', 'Y'),

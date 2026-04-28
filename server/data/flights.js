@@ -276,6 +276,7 @@ const FL002 = {
 const FL003 = {
   flight_id: 'FL003',
   is_upper_deck: false,
+  wing_zone_rows: [14, 15, 16, 17, 18, 19, 20, 21, 22],
   seats: [
     // ── FIRST (F) ──────────────────────────────────────────────────────────
     // Row 1 — bulkhead, usb_power, no_smoke, infant_eligible; stretcher on A/D

@@ -20,6 +20,7 @@ const makeRow = (rowNumber: number): CabinRow => ({
     Seat.create({ seatNumber: SeatNumber.create(`${rowNumber}B`), status: 'occupied', cabinClass: 'Y' }),
   ],
   isExitRow: false,
+  isWingZone: false,
 });
 
 describe('SeatPlanResult', () => {
@@ -54,8 +55,8 @@ describe('SeatPlanResult', () => {
 describe('SeatPlanResult.derivePassengers', () => {
   it('returns one Passenger per occupied seat in row/column order', () => {
     const rows: CabinRow[] = [
-      { rowNumber: 1, seats: [makeOccupiedSeat('1A'), makeOccupiedSeat('1B')], isExitRow: false },
-      { rowNumber: 2, seats: [makeOccupiedSeat('2A')], isExitRow: false },
+      { rowNumber: 1, seats: [makeOccupiedSeat('1A'), makeOccupiedSeat('1B')], isExitRow: false, isWingZone: false },
+      { rowNumber: 2, seats: [makeOccupiedSeat('2A')], isExitRow: false, isWingZone: false },
     ];
     const result = SeatPlanResult.create({ rows, flightId: 'FL001', isUpperDeck: false });
     const passengers = result.derivePassengers();
@@ -75,6 +76,7 @@ describe('SeatPlanResult.derivePassengers', () => {
           Seat.create({ seatNumber: SeatNumber.create('1C'), status: 'blocked', cabinClass: 'Y' }),
         ],
         isExitRow: false,
+        isWingZone: false,
       },
     ];
     const result = SeatPlanResult.create({ rows, flightId: 'FL001', isUpperDeck: false });
@@ -90,6 +92,7 @@ describe('SeatPlanResult.derivePassengers', () => {
           Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' }),
         ],
         isExitRow: false,
+        isWingZone: false,
       },
     ];
     const result = SeatPlanResult.create({ rows, flightId: 'FL001', isUpperDeck: false });

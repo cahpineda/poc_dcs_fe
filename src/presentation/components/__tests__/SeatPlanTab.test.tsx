@@ -21,6 +21,7 @@ function makeFixturePlan() {
       {
         rowNumber: 1,
         isExitRow: false,
+        isWingZone: false,
         seats: [
           Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' }),
           Seat.create({ seatNumber: SeatNumber.create('1B'), status: 'occupied', cabinClass: 'Y', passengerName: 'JANE DOE', gender: 'F' }),

@@ -71,6 +71,7 @@ export function mapSeatPlanDTO(dto: unknown): SeatPlanResult {
       rowNumber: Number(row.row_number ?? 0),
       seats,
       isExitRow: Boolean(row.is_exit_row ?? false),
+      isWingZone: Boolean(row.is_wing_zone ?? false),
     };
   });
 

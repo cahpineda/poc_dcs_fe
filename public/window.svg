@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 35" width="14" height="35">
+  <!-- Fuselage panel -->
+  <rect width="14" height="35" fill="#cecece"/>
+  <!-- Outer frame -->
+  <rect x="1.5" y="3" width="11" height="27.5" rx="5.5" ry="5.5" fill="#a8a8a8"/>
+  <!-- Glass pane -->
+  <rect x="3" y="4.5" width="8" height="24.5" rx="4" ry="4" fill="#aacde8"/>
+  <!-- Glass inner border -->
+  <rect x="3" y="4.5" width="8" height="24.5" rx="4" ry="4" fill="none" stroke="#6a9ab5" stroke-width="0.75"/>
+  <!-- Reflection highlight -->
+  <rect x="4.5" y="7" width="2.5" height="8" rx="1.2" ry="1.2" fill="rgba(255,255,255,0.48)"/>
+  <!-- Sill ledge -->
+  <rect x="1.5" y="28.5" width="11" height="3.5" rx="1.5" ry="1.5" fill="#a0a0a0"/>
+</svg>

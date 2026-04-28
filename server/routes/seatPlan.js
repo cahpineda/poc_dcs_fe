@@ -37,9 +37,12 @@ function buildSeatPlanResponse(flightId) {
     rowMap.get(s.row_number).push(s);
   }
 
+  const wingZoneSet = new Set(Array.isArray(flight.wing_zone_rows) ? flight.wing_zone_rows : []);
+
   const seat_rows = [];
   for (const [rowNumber, seats] of rowMap) {
     const isExitRow = seats.some((s) => s.is_exit_row);
+    const isWingZone = wingZoneSet.has(rowNumber);
     const cabinClass = seats[0].cabin_class;
 
     const mappedSeats = seats.map((s) => ({
@@ -61,6 +64,7 @@ function buildSeatPlanResponse(flightId) {
     seat_rows.push({
       row_number: rowNumber,
       is_exit_row: isExitRow,
+      is_wing_zone: isWingZone,
       cabin_class: cabinClass,
       seats: mappedSeats,
     });

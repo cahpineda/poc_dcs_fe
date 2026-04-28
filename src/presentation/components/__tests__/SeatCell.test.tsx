@@ -8,12 +8,12 @@ describe('SeatCell', () => {
   // Test 1 — Happy path: available seat renders correct class and fires onSelect
   it('renders button with seat_available class and calls onSelect when clicked', async () => {
     const onSelect = vi.fn();
-    render(<SeatCell seatNumber="12A" status="available" onSelect={onSelect} />);
+    render(<SeatCell seatNumber="12B" status="available" onSelect={onSelect} />);
     const btn = screen.getByRole('button');
     expect(btn).toHaveClass('seat_available');
-    expect(btn).toHaveTextContent('12A');
+    expect(btn).toHaveTextContent('12B');
     await userEvent.click(btn);
-    expect(onSelect).toHaveBeenCalledWith('12A');
+    expect(onSelect).toHaveBeenCalledWith('12B');
   });
 
   // Test 2 — Null/invalid: occupied seat does NOT fire onSelect
@@ -26,21 +26,22 @@ describe('SeatCell', () => {
     expect(onSelect).toHaveBeenCalledWith('12A');
   });
 
-  // Test 3 — Error/boundary: exit_row_available seat has both seat_available and seat_exit classes
+  // Test 3 — Error/boundary: exit_row_available seat has both status and seat_exit classes
   it('renders exit row available seat with seat_exit class alongside status class', () => {
     const onSelect = vi.fn();
     render(
-      <SeatCell seatNumber="14F" status="exit_row_available" isExitRow onSelect={onSelect} />
+      <SeatCell seatNumber="14C" status="exit_row_available" isExitRow onSelect={onSelect} />
     );
     const btn = screen.getByRole('button');
     expect(btn).toHaveClass('seat_exit_row_available');
     expect(btn).toHaveClass('seat_exit');
   });
 
+
   // Test 4 — All other statuses apply correct class names
   it.each([
     ['blocked', 'seat_blocked'],
-    ['exit_row_occupied', 'seat_exit_row_occupied'],
+    ['exit_row_occupied', 'seat_occupied'],
     ['unavailable', 'seat_unavailable'],
     ['infant_occupied', 'seat_infant_occupied'],
   ] as const)('renders status "%s" with class "%s"', (status, expectedClass) => {

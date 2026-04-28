@@ -5,7 +5,6 @@ const LEGEND_ENTRIES = [
   { label: 'Boarded',            className: 'seat_boarded' },
   { label: 'Blocked',            className: 'seat_blocked' },
   { label: 'Exit Row Avail.',    className: 'seat_exit_row_available' },
-  { label: 'Exit Row Occ.',      className: 'seat_exit_row_occupied' },
   { label: 'Infant',             className: 'seat_infant_occupied' },
   { label: 'Unavailable',        className: 'seat_unavailable' },
 ] as const;
@@ -19,6 +18,30 @@ export function SeatLegend() {
           <span>{label}</span>
         </div>
       ))}
+      <div className="legend_item">
+        <img src="/window.svg" className="legend_window_img" alt="" aria-hidden="true" />
+        <span>Window</span>
+      </div>
+      <div className="legend_item">
+        <div className="legend_swatch_exit_marker" />
+        <span>Wing Exit</span>
+      </div>
+      <div className="legend_item">
+        <span className="legend_dot seat_gender_male" aria-hidden="true" />
+        <span>Male</span>
+      </div>
+      <div className="legend_item">
+        <span className="legend_dot seat_gender_female" aria-hidden="true" />
+        <span>Female</span>
+      </div>
+      <div className="legend_item">
+        <span className="legend_dot seat_gender_unaccompanied" aria-hidden="true" />
+        <span>Unaccompanied</span>
+      </div>
+      <div className="legend_item">
+        <span className="legend_wchr_badge" aria-hidden="true" />
+        <span>Wheelchair (WCHR)</span>
+      </div>
     </div>
   );
 }

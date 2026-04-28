@@ -8,6 +8,7 @@ import type { CabinRow } from '@/domain/seat/CabinRow';
 const makeRowWithCabin = (rowNumber: number, cabinClass: string): CabinRow => ({
   rowNumber,
   isExitRow: false,
+  isWingZone: false,
   seats: [
     Seat.create({ seatNumber: SeatNumber.create(`${rowNumber}A`), status: 'available', cabinClass }),
     Seat.create({ seatNumber: SeatNumber.create(`${rowNumber}B`), status: 'available', cabinClass }),
@@ -17,6 +18,7 @@ const makeRowWithCabin = (rowNumber: number, cabinClass: string): CabinRow => ({
 const makeRow = (rowNumber: number, isExitRow = false): CabinRow => ({
   rowNumber,
   isExitRow,
+  isWingZone: false,
   seats: [
     Seat.create({ seatNumber: SeatNumber.create(`${rowNumber}A`), status: 'available', cabinClass: 'Y' }),
     Seat.create({ seatNumber: SeatNumber.create(`${rowNumber}B`), status: 'occupied', cabinClass: 'Y' }),
@@ -53,17 +55,17 @@ describe('CabinDeck', () => {
 });
 
 describe('CabinDeck — cabin dividers', () => {
-  it('inserts a cabin_divider between rows of different cabin classes', () => {
+  it('inserts a label for the first cabin plus one divider at the F→J transition', () => {
     const rows = [
       makeRowWithCabin(1, 'F'),
       makeRowWithCabin(2, 'J'),  // transition F→J
       makeRowWithCabin(3, 'J'),
     ];
     const { container } = render(<CabinDeck rows={rows} onSeatSelect={vi.fn()} />);
-    const dividers = container.querySelectorAll('.cabin_divider');
-    expect(dividers).toHaveLength(1);
+    // F label + J label = 2 dividers
+    expect(container.querySelectorAll('.cabin_divider')).toHaveLength(2);
   });
-  it('inserts dividers at both F→J and J→Y transitions', () => {
+  it('inserts labels for all three cabins (F, J, Y)', () => {
     const rows = [
       makeRowWithCabin(1, 'F'),
       makeRowWithCabin(2, 'J'),
@@ -71,17 +73,19 @@ describe('CabinDeck — cabin dividers', () => {
       makeRowWithCabin(4, 'Y'),
     ];
     const { container } = render(<CabinDeck rows={rows} onSeatSelect={vi.fn()} />);
-    expect(container.querySelectorAll('.cabin_divider')).toHaveLength(2);
+    expect(container.querySelectorAll('.cabin_divider')).toHaveLength(3);
   });
-  it('shows cabin label in the divider', () => {
+  it('shows correct cabin labels for F and J sections', () => {
     const rows = [makeRowWithCabin(1, 'F'), makeRowWithCabin(2, 'J')];
     const { container } = render(<CabinDeck rows={rows} onSeatSelect={vi.fn()} />);
-    const divider = container.querySelector('.cabin_divider');
-    expect(divider?.textContent).toMatch(/business/i);
+    const dividers = container.querySelectorAll('.cabin_divider');
+    expect(dividers[0].textContent).toMatch(/first/i);
+    expect(dividers[1].textContent).toMatch(/business/i);
   });
-  it('inserts no divider when all rows have the same cabin class', () => {
+  it('inserts one divider for a single cabin class (label at the top)', () => {
     const rows = [makeRowWithCabin(1, 'Y'), makeRowWithCabin(2, 'Y'), makeRowWithCabin(3, 'Y')];
     const { container } = render(<CabinDeck rows={rows} onSeatSelect={vi.fn()} />);
-    expect(container.querySelectorAll('.cabin_divider')).toHaveLength(0);
+    expect(container.querySelectorAll('.cabin_divider')).toHaveLength(1);
+    expect(container.querySelector('.cabin_divider')?.textContent).toMatch(/economy/i);
   });
 });

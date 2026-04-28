@@ -2,34 +2,26 @@ import { render, screen } from '@testing-library/react';
 import { SeatLegend } from '../SeatLegend';
 
 describe('SeatLegend', () => {
-  // Test 1 — Happy path: renders all 9 legend entries (Selected removed per V-040 parity fix)
-  it('renders exactly 9 legend entries', () => {
+  // Test 1 — Happy path: renders status swatches and overlay indicators
+  it('renders all seat status swatches and overlay indicator elements', () => {
     const { container } = render(<SeatLegend />);
-    const available        = container.querySelector('.seat_available');
-    const occupied         = container.querySelector('.seat_occupied');
-    const checkedIn        = container.querySelector('.seat_checked_in');
-    const boarded          = container.querySelector('.seat_boarded');
-    const blocked          = container.querySelector('.seat_blocked');
-    const exitAvailable    = container.querySelector('.seat_exit_row_available');
-    const exitOccupied     = container.querySelector('.seat_exit_row_occupied');
-    const infantOccupied   = container.querySelector('.seat_infant_occupied');
-    const unavailable      = container.querySelector('.seat_unavailable');
-
-    expect(available).toBeInTheDocument();
-    expect(occupied).toBeInTheDocument();
-    expect(checkedIn).toBeInTheDocument();
-    expect(boarded).toBeInTheDocument();
-    expect(blocked).toBeInTheDocument();
-    expect(exitAvailable).toBeInTheDocument();
-    expect(exitOccupied).toBeInTheDocument();
-    expect(infantOccupied).toBeInTheDocument();
-    expect(unavailable).toBeInTheDocument();
-    // "Selected" is an interaction state, not a status — removed from legend per cloud2 parity (V-040)
+    expect(container.querySelector('.seat_available')).toBeInTheDocument();
+    expect(container.querySelector('.seat_occupied')).toBeInTheDocument();
+    expect(container.querySelector('.seat_checked_in')).toBeInTheDocument();
+    expect(container.querySelector('.seat_boarded')).toBeInTheDocument();
+    expect(container.querySelector('.seat_blocked')).toBeInTheDocument();
+    expect(container.querySelector('.seat_exit_row_available')).toBeInTheDocument();
+    expect(container.querySelector('.seat_infant_occupied')).toBeInTheDocument();
+    expect(container.querySelector('.seat_unavailable')).toBeInTheDocument();
+    expect(container.querySelector('.seat_gender_male')).toBeInTheDocument();
+    expect(container.querySelector('.seat_gender_female')).toBeInTheDocument();
+    expect(container.querySelector('.seat_gender_unaccompanied')).toBeInTheDocument();
+    expect(container.querySelector('.legend_wchr_badge')).toBeInTheDocument();
+    expect(container.querySelector('.seat_exit_row_occupied')).not.toBeInTheDocument();
     expect(container.querySelector('.seat_selected')).not.toBeInTheDocument();
   });
 
-  // Test 2 — Null/invalid: each entry has a label text (not just empty boxes)
-  // Labels updated per V-040 parity fix: "Checked In" (not "Checked-in"), "Infant" (not "Infant Occupied")
+  // Test 2 — each entry has a label text
   it('renders a label for each legend entry', () => {
     render(<SeatLegend />);
     expect(screen.getByText('Available')).toBeInTheDocument();
@@ -38,10 +30,13 @@ describe('SeatLegend', () => {
     expect(screen.getByText('Boarded')).toBeInTheDocument();
     expect(screen.getByText('Blocked')).toBeInTheDocument();
     expect(screen.getByText('Exit Row Avail.')).toBeInTheDocument();
-    expect(screen.getByText('Exit Row Occ.')).toBeInTheDocument();
+    expect(screen.queryByText('Exit Row Occ.')).not.toBeInTheDocument();
     expect(screen.getByText('Infant')).toBeInTheDocument();
     expect(screen.getByText('Unavailable')).toBeInTheDocument();
-    // "Selected" removed from legend per V-040 parity fix
+    expect(screen.getByText('Male')).toBeInTheDocument();
+    expect(screen.getByText('Female')).toBeInTheDocument();
+    expect(screen.getByText('Unaccompanied')).toBeInTheDocument();
+    expect(screen.getByText('Wheelchair (WCHR)')).toBeInTheDocument();
     expect(screen.queryByText('Selected')).not.toBeInTheDocument();
   });
 

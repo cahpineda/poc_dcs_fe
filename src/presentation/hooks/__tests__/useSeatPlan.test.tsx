@@ -23,6 +23,7 @@ const mockSeatPlan = SeatPlanResult.create({
     {
       rowNumber: 1,
       isExitRow: false,
+      isWingZone: false,
       seats: [
         Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' }),
       ],

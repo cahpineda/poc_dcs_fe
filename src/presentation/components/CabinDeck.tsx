@@ -35,7 +35,7 @@ export function CabinDeck({ rows, selectedSeat, reseatMode = false, activePassen
 
   for (const row of rows) {
     const rowCabin = row.seats[0]?.cabin ?? '';
-    if (prevCabin !== null && rowCabin !== prevCabin) {
+    if (rowCabin !== prevCabin) {
       elements.push(
         <CabinDivider key={`divider-${row.rowNumber}`} label={CABIN_LABELS[rowCabin] ?? rowCabin} />
       );
