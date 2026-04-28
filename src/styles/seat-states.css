@@ -41,6 +41,11 @@
   filter: brightness(1.15);
 }
 
+/* Side seat width override (A/F columns) */
+.seat_cell_side {
+  width: var(--seat-cell-width-side);
+}
+
 /* Aisle gap */
 .aisle_gap {
   width: var(--aisle-gap);
@@ -48,10 +53,11 @@
 }
 
 /* Overlay indicators */
+/* Infant indicator — bottom-LEFT (cloud2 layout) */
 .seat_infant_indicator {
   position: absolute;
   bottom: 1px;
-  right: 1px;
+  left: 1px;
   width: 7px;
   height: 9px;
   background: var(--color-seat-infant);

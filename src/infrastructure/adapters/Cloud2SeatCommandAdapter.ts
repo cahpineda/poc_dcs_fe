@@ -19,7 +19,11 @@ export class Cloud2SeatCommandAdapter implements ISeatCommandService {
 
   async assignSeat(command: AssignSeatCommand): Promise<void> {
     try {
-      await this.http.post('/ajax/seat_plan/assign_seat', command);
+      await this.http.post('/ajax/seat_plan/assign_seat', {
+        flight_id: command.flightId,
+        seat_number: command.seatNumber,
+        passenger_id: command.passengerId,
+      });
     } catch (err) {
       if (isConflict(err)) throw new Error('Seat is already occupied');
       throw err;
@@ -27,26 +31,49 @@ export class Cloud2SeatCommandAdapter implements ISeatCommandService {
   }
 
   async reseatPassenger(command: ReseatPassengerCommand): Promise<void> {
-    await this.http.post('/ajax/seat_plan/reseat_passenger', command);
+    await this.http.post('/ajax/seat_plan/reseat_passenger', {
+      flight_id: command.flightId,
+      from_seat: command.fromSeat,
+      to_seat: command.toSeat,
+      passenger_id: command.passengerId,
+    });
   }
 
   async blockSeat(command: BlockSeatCommand): Promise<void> {
-    await this.http.post('/ajax/seat_plan/block_seat', command);
+    await this.http.post('/ajax/seat_plan/block_seat', {
+      flight_id: command.flightId,
+      seat_number: command.seatNumber,
+      reason: command.reason,
+    });
   }
 
   async unblockSeat(command: UnblockSeatCommand): Promise<void> {
-    await this.http.post('/ajax/seat_plan/unblock_seat', command);
+    await this.http.post('/ajax/seat_plan/unblock_seat', {
+      flight_id: command.flightId,
+      seat_number: command.seatNumber,
+    });
   }
 
   async unassignSeat(command: UnassignSeatCommand): Promise<void> {
-    await this.http.post('/dc/unseat_passenger', command);
+    await this.http.post('/dc/unseat_passenger', {
+      flight_id: command.flightId,
+      seat_number: command.seatNumber,
+    });
   }
 
   async swapSeats(command: SwapSeatsCommand): Promise<void> {
-    await this.http.post('/dc/swap_seats', command);
+    await this.http.post('/dc/swap_seats', {
+      flight_id: command.flightId,
+      seat_a: command.seatA,
+      seat_b: command.seatB,
+    });
   }
 
   async reseatGroup(command: ReseatGroupCommand): Promise<void> {
-    await this.http.post('/dc/reseat_group', command);
+    await this.http.post('/dc/reseat_group', {
+      flight_id: command.flightId,
+      passenger_ids: command.passengerIds,
+      target_row: command.targetRow,
+    });
   }
 }

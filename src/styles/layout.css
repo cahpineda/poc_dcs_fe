@@ -62,8 +62,19 @@
 }
 
 .column_label {
-  width: var(--seat-size);
+  width: var(--seat-cell-width);
   text-align: center;
+  flex-shrink: 0;
+}
+
+/* Side columns (A / F) match the wider side-seat width */
+.column_label_side {
+  width: var(--seat-cell-width-side);
+}
+
+/* Aisle spacer between C and D column headers */
+.column_label_aisle {
+  width: var(--aisle-gap);
   flex-shrink: 0;
 }
 

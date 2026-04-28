@@ -15,12 +15,14 @@ export interface PassengerDetailDrawerProps {
 
 const STATUS_LABEL: Record<string, string> = {
   occupied: 'Occupied',
-  checked_in: 'Checked-in',
+  exit_row_occupied: 'Exit Row Occupied',
+  checked_in: 'Checked In',
   boarded: 'Boarded',
   blocked: 'Blocked',
+  infant_occupied: 'Infant Occupied',
 };
 
-const BLOCKABLE = new Set(['occupied', 'checked_in', 'boarded']);
+const BLOCKABLE = new Set(['occupied', 'exit_row_occupied', 'checked_in', 'boarded', 'infant_occupied']);
 
 export function PassengerDetailDrawer({
   seat,
@@ -72,6 +74,18 @@ export function PassengerDetailDrawer({
             <dd>{seat.pnr}</dd>
           </>
         )}
+        {seat.ssrs && seat.ssrs.length > 0 && (
+          <>
+            <dt>SSRs</dt>
+            <dd>{seat.ssrs.join(', ')}</dd>
+          </>
+        )}
+        {seat.rushStatus && (
+          <>
+            <dt>Rush</dt>
+            <dd className="passenger_drawer__rush">RUSH</dd>
+          </>
+        )}
       </dl>
       <div className="passenger_drawer__actions">
         {showReseat && (
@@ -79,7 +93,7 @@ export function PassengerDetailDrawer({
             type="button"
             onClick={() => onReseat(seat)}
             disabled={anyPending}
-            className={anyPending ? 'drawer_action_pending' : undefined}
+            className={`drawer_action_btn${anyPending ? ' drawer_action_pending' : ''}`}
           >
             Reseat
           </button>
@@ -89,6 +103,7 @@ export function PassengerDetailDrawer({
             type="button"
             onClick={() => onSwap(seat)}
             disabled={anyPending}
+            className="drawer_action_btn"
           >
             Swap
           </button>
@@ -98,7 +113,7 @@ export function PassengerDetailDrawer({
             type="button"
             onClick={() => onBlock(seat)}
             disabled={Boolean(blockPending)}
-            className={blockPending ? 'drawer_action_pending' : undefined}
+            className={`drawer_action_btn${blockPending ? ' drawer_action_pending' : ''}`}
           >
             Block seat
           </button>
@@ -108,7 +123,7 @@ export function PassengerDetailDrawer({
             type="button"
             onClick={() => onUnassign(seat)}
             disabled={Boolean(unassignPending)}
-            className={unassignPending ? 'drawer_action_pending' : undefined}
+            className={`drawer_action_btn${unassignPending ? ' drawer_action_pending' : ''}`}
           >
             Unseat
           </button>
@@ -118,7 +133,7 @@ export function PassengerDetailDrawer({
             type="button"
             onClick={() => onUnblock(seat)}
             disabled={Boolean(unblockPending)}
-            className={unblockPending ? 'drawer_action_pending' : undefined}
+            className={`drawer_action_btn${unblockPending ? ' drawer_action_pending' : ''}`}
           >
             Unblock seat
           </button>

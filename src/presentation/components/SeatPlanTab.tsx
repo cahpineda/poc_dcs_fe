@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSeatPlan } from '@/presentation/hooks/useSeatPlan';
 import { useSeatAssign } from '@/presentation/hooks/useSeatAssign';
 import { useSeatBlock, useSeatUnblock } from '@/presentation/hooks/useSeatBlock';
@@ -21,7 +21,7 @@ interface SeatPlanTabProps {
   flightId: string;
 }
 
-const DRAWER_STATUSES = new Set(['occupied', 'exit_row_occupied', 'checked_in', 'boarded', 'blocked']);
+const DRAWER_STATUSES = new Set(['occupied', 'exit_row_occupied', 'checked_in', 'boarded', 'blocked', 'infant_occupied']);
 
 function resolvePassengerId(seat: Seat): string {
   return seat.passengerKey ?? 'PAX-' + seat.number.toString();
@@ -46,8 +46,24 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
   const groupReseatHook = useSeatGroupReseat(flightId);
   const swapMode = swapHook.firstSeat !== null;
 
+  // Wire Escape key to cancel reseat mode (E-008 parity fix)
+  useEffect(() => {
+    if (!reseatMode) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleCancelReseat();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reseatMode]);
+
   if (isLoading) return <div className="seat_plan_loading">Loading seat map…</div>;
-  if (error) return <div className="seat_plan_error">Failed to load seat map</div>;
+  if (error) {
+    const msg = (error as Error).message?.includes('404') || (error as Error).message?.includes('not found')
+      ? `Flight ${flightId} not found`
+      : `Failed to load seat map for flight ${flightId}`;
+    return <div className="seat_plan_error">{msg}</div>;
+  }
   if (!seatPlan) return null;
 
   function handleSeatSelect(seatNumber: string) {
@@ -153,6 +169,7 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
 
   return (
     <div className="seat_plan_tab">
+      {selectedSeatObj && <div className="passenger_drawer_backdrop" onClick={handleDrawerClose} />}
       {reseatMode && (
         <div className="reseat_mode_banner" role="status">
           <span>
@@ -203,6 +220,21 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
       )}
       {assignMutation.isSuccess && (
         <div className="seat_assign_success">Seat assigned</div>
+      )}
+      {reseatMutation.isPending && (
+        <div className="seat_assign_pending">Reseating passenger…</div>
+      )}
+      {reseatMutation.isError && (
+        <div className="seat_assign_error">{(reseatMutation.error as Error).message}</div>
+      )}
+      {unassignMutation.isError && (
+        <div className="seat_assign_error">{(unassignMutation.error as Error).message}</div>
+      )}
+      {swapHook.isError && (
+        <div className="seat_assign_error">{(swapHook.error as Error).message}</div>
+      )}
+      {groupReseatHook.isError && (
+        <div className="seat_assign_error">{(groupReseatHook.error as Error).message}</div>
       )}
       {selectedSeat && !assignMutation.isPending && (
         <div className="selected_seat_info">Selected: {selectedSeat}</div>

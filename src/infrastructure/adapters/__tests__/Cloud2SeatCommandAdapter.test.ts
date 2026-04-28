@@ -24,7 +24,11 @@ describe('Cloud2SeatCommandAdapter', () => {
 
     await adapter.assignSeat(cmd);
 
-    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/assign_seat', cmd);
+    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/assign_seat', {
+      flight_id: 'FL001',
+      seat_number: '12A',
+      passenger_id: 'P1',
+    });
   });
 
   it('assignSeat maps HTTP 409 to domain error about occupied seat', async () => {
@@ -46,7 +50,11 @@ describe('Cloud2SeatCommandAdapter', () => {
 
     await adapter.blockSeat(cmd);
 
-    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/block_seat', cmd);
+    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/block_seat', {
+      flight_id: 'FL001',
+      seat_number: '12A',
+      reason: 'crew',
+    });
   });
 
   it('unblockSeat posts to correct endpoint', async () => {
@@ -56,7 +64,10 @@ describe('Cloud2SeatCommandAdapter', () => {
 
     await adapter.unblockSeat(cmd);
 
-    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/unblock_seat', cmd);
+    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/unblock_seat', {
+      flight_id: 'FL001',
+      seat_number: '12A',
+    });
   });
 
   it('reseatPassenger posts to correct endpoint', async () => {
@@ -66,7 +77,12 @@ describe('Cloud2SeatCommandAdapter', () => {
 
     await adapter.reseatPassenger(cmd);
 
-    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/reseat_passenger', cmd);
+    expect(mockPost).toHaveBeenCalledWith('/ajax/seat_plan/reseat_passenger', {
+      flight_id: 'FL001',
+      from_seat: '12A',
+      to_seat: '14C',
+      passenger_id: 'P1',
+    });
   });
 
   it('unassignSeat posts to /dc/unseat_passenger with the command', async () => {
@@ -74,7 +90,10 @@ describe('Cloud2SeatCommandAdapter', () => {
     const adapter = new Cloud2SeatCommandAdapter({ post } as unknown as AxiosInstance);
     const cmd = UnassignSeatCommand.create({ flightId: 'FL001', seatNumber: '1B' });
     await adapter.unassignSeat(cmd);
-    expect(post).toHaveBeenCalledWith('/dc/unseat_passenger', cmd);
+    expect(post).toHaveBeenCalledWith('/dc/unseat_passenger', {
+      flight_id: 'FL001',
+      seat_number: '1B',
+    });
   });
 
   it('swapSeats posts to /dc/swap_seats with the command', async () => {
@@ -82,7 +101,11 @@ describe('Cloud2SeatCommandAdapter', () => {
     const adapter = new Cloud2SeatCommandAdapter({ post } as unknown as AxiosInstance);
     const cmd = SwapSeatsCommand.create({ flightId: 'FL001', seatA: '1B', seatB: '2C' });
     await adapter.swapSeats(cmd);
-    expect(post).toHaveBeenCalledWith('/dc/swap_seats', cmd);
+    expect(post).toHaveBeenCalledWith('/dc/swap_seats', {
+      flight_id: 'FL001',
+      seat_a: '1B',
+      seat_b: '2C',
+    });
   });
 
   it('reseatGroup posts to /dc/reseat_group with the command', async () => {
@@ -90,6 +113,10 @@ describe('Cloud2SeatCommandAdapter', () => {
     const adapter = new Cloud2SeatCommandAdapter({ post } as unknown as AxiosInstance);
     const cmd = ReseatGroupCommand.create({ flightId: 'FL001', passengerIds: ['PAX-001'] });
     await adapter.reseatGroup(cmd);
-    expect(post).toHaveBeenCalledWith('/dc/reseat_group', cmd);
+    expect(post).toHaveBeenCalledWith('/dc/reseat_group', {
+      flight_id: 'FL001',
+      passenger_ids: ['PAX-001'],
+      target_row: undefined,
+    });
   });
 });

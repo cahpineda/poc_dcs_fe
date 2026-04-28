@@ -25,7 +25,7 @@ None
 - [x] **Phase 13: Domain Passenger Fields and Unseat** - Real passenger_key, boardingGroup, rushStatus, pnr fields + UNSEAT operation
 - [x] **Phase 14: Passenger Overlays and Cabin Dividers** - WCHR badge, rush outline, boarding group/PNR in drawer, cabin section dividers
 - [x] **Phase 15: Advanced Operations** - Seat swap (two-click) and group reseat (multi-select) — closes remaining Category 4 gaps
-- [ ] **Phase 16: Parity Audit and Fix** - Full visual/functional audit against cloud2, document and fix all discrepancies (ACA-2953)
+- [x] **Phase 16: Parity Audit and Fix** - Full visual/functional audit against cloud2, document and fix all discrepancies (ACA-2953)
 
 ## Phase Details
 

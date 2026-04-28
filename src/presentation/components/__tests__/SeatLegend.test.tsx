@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import { SeatLegend } from '../SeatLegend';
 
 describe('SeatLegend', () => {
-  // Test 1 — Happy path: renders all 10 legend entries
-  it('renders exactly 10 legend entries', () => {
+  // Test 1 — Happy path: renders all 9 legend entries (Selected removed per V-040 parity fix)
+  it('renders exactly 9 legend entries', () => {
     const { container } = render(<SeatLegend />);
     const available        = container.querySelector('.seat_available');
     const occupied         = container.querySelector('.seat_occupied');
@@ -14,7 +14,6 @@ describe('SeatLegend', () => {
     const exitOccupied     = container.querySelector('.seat_exit_row_occupied');
     const infantOccupied   = container.querySelector('.seat_infant_occupied');
     const unavailable      = container.querySelector('.seat_unavailable');
-    const selected         = container.querySelector('.seat_selected');
 
     expect(available).toBeInTheDocument();
     expect(occupied).toBeInTheDocument();
@@ -25,22 +24,25 @@ describe('SeatLegend', () => {
     expect(exitOccupied).toBeInTheDocument();
     expect(infantOccupied).toBeInTheDocument();
     expect(unavailable).toBeInTheDocument();
-    expect(selected).toBeInTheDocument();
+    // "Selected" is an interaction state, not a status — removed from legend per cloud2 parity (V-040)
+    expect(container.querySelector('.seat_selected')).not.toBeInTheDocument();
   });
 
   // Test 2 — Null/invalid: each entry has a label text (not just empty boxes)
+  // Labels updated per V-040 parity fix: "Checked In" (not "Checked-in"), "Infant" (not "Infant Occupied")
   it('renders a label for each legend entry', () => {
     render(<SeatLegend />);
     expect(screen.getByText('Available')).toBeInTheDocument();
     expect(screen.getByText('Occupied')).toBeInTheDocument();
-    expect(screen.getByText('Checked-in')).toBeInTheDocument();
+    expect(screen.getByText('Checked In')).toBeInTheDocument();
     expect(screen.getByText('Boarded')).toBeInTheDocument();
     expect(screen.getByText('Blocked')).toBeInTheDocument();
-    expect(screen.getByText('Exit Row Available')).toBeInTheDocument();
-    expect(screen.getByText('Exit Row Occupied')).toBeInTheDocument();
-    expect(screen.getByText('Infant Occupied')).toBeInTheDocument();
+    expect(screen.getByText('Exit Row Avail.')).toBeInTheDocument();
+    expect(screen.getByText('Exit Row Occ.')).toBeInTheDocument();
+    expect(screen.getByText('Infant')).toBeInTheDocument();
     expect(screen.getByText('Unavailable')).toBeInTheDocument();
-    expect(screen.getByText('Selected')).toBeInTheDocument();
+    // "Selected" removed from legend per V-040 parity fix
+    expect(screen.queryByText('Selected')).not.toBeInTheDocument();
   });
 
   // Test 3 — Error/boundary: component renders without crashing (no props required)

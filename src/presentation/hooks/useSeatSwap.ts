@@ -34,5 +34,7 @@ export function useSeatSwap(flightId: string) {
     selectSeat,
     cancel,
     isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
   };
 }

@@ -42,5 +42,7 @@ export function useSeatGroupReseat(flightId: string) {
     confirm,
     cancel,
     isPending: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
   };
 }
