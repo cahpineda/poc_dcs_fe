@@ -2,12 +2,42 @@
 .seat_plan_tab {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-6);
+  padding: var(--space-4);
   background: var(--color-surface-alt);
   min-height: 100vh;
   font-family: var(--font-family-base);
+  gap: var(--space-2);
+}
+
+/* Two-column layout: passenger list (left) + seat map (right) */
+.seat_plan_layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  flex: 1;
+}
+
+.seat_plan_main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+/* Left sidebar housing passenger list + filter panel */
+.seat_plan_sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  max-height: 100vh;
 }
 
 /* Cabin grid */

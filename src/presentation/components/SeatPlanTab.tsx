@@ -7,15 +7,20 @@ import { useSeatUnassign } from '@/presentation/hooks/useSeatUnassign';
 import { useSeatSwap } from '@/presentation/hooks/useSeatSwap';
 import { useSeatGroupReseat } from '@/presentation/hooks/useSeatGroupReseat';
 import { autoAssignSeat } from '@/domain/seat/autoAssignSeat';
+import type { SeatFilterId } from '@/domain/seat/SeatFilter';
 import { AssignSeatCommand } from '@/domain/seat/commands/AssignSeatCommand';
 import { BlockSeatCommand } from '@/domain/seat/commands/BlockSeatCommand';
 import { UnblockSeatCommand } from '@/domain/seat/commands/UnblockSeatCommand';
 import { ReseatPassengerCommand } from '@/domain/seat/commands/ReseatPassengerCommand';
 import { UnassignSeatCommand } from '@/domain/seat/commands/UnassignSeatCommand';
 import type { Seat } from '@/domain/seat/Seat';
+import type { Passenger } from '@/domain/seat/Passenger';
 import { SeatMap } from './SeatMap';
 import { SeatLegend } from './SeatLegend';
 import { PassengerDetailDrawer } from './PassengerDetailDrawer';
+import { SeatNumberInput } from './SeatNumberInput';
+import { PassengerList } from './PassengerList';
+import { SeatFilterPanel } from './SeatFilterPanel';
 
 interface SeatPlanTabProps {
   flightId: string;
@@ -34,6 +39,7 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
   const [reseatFromSeat, setReseatFromSeat] = useState<string | null>(null);
   const [reseatPassengerName, setReseatPassengerName] = useState<string | null>(null);
   const [groupReseatMode, setGroupReseatMode] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<ReadonlySet<SeatFilterId>>(new Set());
   const reseatMode = reseatPassengerId !== null;
 
   const { data: seatPlan, isLoading, error } = useSeatPlan(flightId);
@@ -152,6 +158,15 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
     groupReseatHook.cancel();
   }
 
+  function handleJumpToSeat(seatNumber: string) {
+    handleSeatSelect(seatNumber);
+  }
+
+  function handlePassengerSelect(passenger: Passenger) {
+    const seat = seatPlan!.getSeat(passenger.currentSeatNumber);
+    if (seat) setSelectedSeatObj(seat);
+  }
+
   function handleMoveGroup() {
     groupReseatHook.confirm();
     setGroupReseatMode(false);
@@ -167,13 +182,25 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
     }
   }
 
+  const handleFilterToggle = (id: SeatFilterId, checked: boolean) => {
+    setActiveFilters((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id); else next.delete(id);
+      return next;
+    });
+  };
+
+  const passengers = seatPlan.derivePassengers();
+  const activePassengerKey = reseatPassengerId;
+
   return (
     <div className="seat_plan_tab">
       {selectedSeatObj && <div className="passenger_drawer_backdrop" onClick={handleDrawerClose} />}
       {reseatMode && (
         <div className="reseat_mode_banner" role="status">
           <span>
-            Reseat mode: select new seat for <strong>{reseatPassengerName}</strong>
+            Reseat mode: select new seat for <strong>{reseatPassengerName}</strong>{' '}
+            <span className="status_pill status_pill_unchecked">NOT CHECKEDIN</span>
           </span>
           <button type="button" onClick={handleCancelReseat}>Cancel</button>
         </div>
@@ -191,54 +218,74 @@ export function SeatPlanTab({ flightId }: SeatPlanTabProps) {
           <button type="button" onClick={handleCancelGroupReseat}>Cancel</button>
         </div>
       )}
-      <SeatMap
-        seatPlan={seatPlan}
-        selectedSeat={selectedSeat}
-        reseatMode={reseatMode}
-        onSeatSelect={handleSeatSelect}
-      />
-      <SeatLegend />
-      <button
-        className="auto_assign_btn"
-        onClick={handleAutoAssign}
-        disabled={assignMutation.isPending}
-      >
-        Auto-assign
-      </button>
-      <button
-        className="group_reseat_btn"
-        type="button"
-        onClick={handleGroupReseat}
-      >
-        Group reseat
-      </button>
-      {assignMutation.isPending && (
-        <div className="seat_assign_pending">Assigning…</div>
-      )}
-      {assignMutation.isError && (
-        <div className="seat_assign_error">{(assignMutation.error as Error).message}</div>
-      )}
-      {assignMutation.isSuccess && (
-        <div className="seat_assign_success">Seat assigned</div>
-      )}
-      {reseatMutation.isPending && (
-        <div className="seat_assign_pending">Reseating passenger…</div>
-      )}
-      {reseatMutation.isError && (
-        <div className="seat_assign_error">{(reseatMutation.error as Error).message}</div>
-      )}
-      {unassignMutation.isError && (
-        <div className="seat_assign_error">{(unassignMutation.error as Error).message}</div>
-      )}
-      {swapHook.isError && (
-        <div className="seat_assign_error">{(swapHook.error as Error).message}</div>
-      )}
-      {groupReseatHook.isError && (
-        <div className="seat_assign_error">{(groupReseatHook.error as Error).message}</div>
-      )}
-      {selectedSeat && !assignMutation.isPending && (
-        <div className="selected_seat_info">Selected: {selectedSeat}</div>
-      )}
+      <div className="seat_plan_layout">
+        <div className="seat_plan_sidebar">
+          <PassengerList
+            passengers={passengers}
+            activePassengerKey={activePassengerKey}
+            onSelect={handlePassengerSelect}
+          />
+          <SeatFilterPanel activeFilters={activeFilters} onToggle={handleFilterToggle} />
+        </div>
+        <div className="seat_plan_main">
+          <div className="seat_map_chrome">
+            <SeatNumberInput seatPlan={seatPlan} onJumpToSeat={handleJumpToSeat} />
+            <button type="button" className="print_seat_plan_link" onClick={() => window.print()}>
+              Print Seat Plan (Graphical Printers Only)
+            </button>
+          </div>
+          <SeatMap
+            seatPlan={seatPlan}
+            selectedSeat={selectedSeat}
+            reseatMode={reseatMode}
+            reseatFromSeat={reseatFromSeat ?? undefined}
+            activeFilters={activeFilters}
+            onSeatSelect={handleSeatSelect}
+          />
+          <SeatLegend />
+          <button
+            className="auto_assign_btn"
+            onClick={handleAutoAssign}
+            disabled={assignMutation.isPending}
+          >
+            Auto-assign
+          </button>
+          <button
+            className="group_reseat_btn"
+            type="button"
+            onClick={handleGroupReseat}
+          >
+            Group reseat
+          </button>
+          {assignMutation.isPending && (
+            <div className="seat_assign_pending">Assigning…</div>
+          )}
+          {assignMutation.isError && (
+            <div className="seat_assign_error">{(assignMutation.error as Error).message}</div>
+          )}
+          {assignMutation.isSuccess && (
+            <div className="seat_assign_success">Seat assigned</div>
+          )}
+          {reseatMutation.isPending && (
+            <div className="seat_assign_pending">Reseating passenger…</div>
+          )}
+          {reseatMutation.isError && (
+            <div className="seat_assign_error">{(reseatMutation.error as Error).message}</div>
+          )}
+          {unassignMutation.isError && (
+            <div className="seat_assign_error">{(unassignMutation.error as Error).message}</div>
+          )}
+          {swapHook.isError && (
+            <div className="seat_assign_error">{(swapHook.error as Error).message}</div>
+          )}
+          {groupReseatHook.isError && (
+            <div className="seat_assign_error">{(groupReseatHook.error as Error).message}</div>
+          )}
+          {selectedSeat && !assignMutation.isPending && (
+            <div className="selected_seat_info">Selected: {selectedSeat}</div>
+          )}
+        </div>
+      </div>
       <PassengerDetailDrawer
         seat={selectedSeatObj}
         onClose={handleDrawerClose}

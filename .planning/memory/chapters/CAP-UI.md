@@ -6,8 +6,8 @@ superseded_by: null
 confidence: 0.7
 created: 2026-04-27
 updated: 2026-04-27
-last_accessed: 2026-04-27
-access_count: 0
+last_accessed: 2026-04-28
+access_count: 2
 key_files:
   - path: src/presentation/components/SeatCell.tsx
     symbol: SeatCell

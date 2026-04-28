@@ -228,6 +228,94 @@
   text-align: left;
 }
 
+/* ── Passenger List Panel ─────────────────────────────────── */
+.passenger_list_panel {
+  width: 280px;
+  min-width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border, #d0d0d0);
+  background: var(--color-surface, #fff);
+  overflow: hidden;
+  max-height: 100%;
+}
+
+.passenger_list_actions {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.passenger_list_actions button {
+  font-size: 11px;
+  padding: 3px 6px;
+  cursor: not-allowed;
+  opacity: 0.6;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #f5f5f5;
+}
+
+.passenger_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.passenger_list_item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 12px;
+  font-family: var(--font-family-base);
+}
+
+.passenger_list_item:hover { background: #f9f9f9; }
+
+.passenger_list_item_active {
+  background: rgba(255, 235, 59, 0.35) !important;
+}
+
+.passenger_name {
+  flex: 1;
+  font-weight: 500;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.passenger_seat {
+  color: #555;
+  font-size: 11px;
+  min-width: 28px;
+  text-align: right;
+}
+
+.passenger_list_count {
+  padding: 4px 8px;
+  border-top: 1px solid #eee;
+  font-size: 11px;
+  color: #666;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.passenger_list_empty {
+  padding: 12px 8px;
+  color: #999;
+  font-size: 12px;
+  font-family: var(--font-family-base);
+}
+
 .drawer_action_btn:hover:not(:disabled) {
   background: var(--color-brand-primary, #1565c0);
 }
@@ -250,3 +338,112 @@
   color: #ff6600;
   font-weight: var(--font-weight-bold, 600);
 }
+
+/* Seat map chrome row — sits above the seat map grid (P17) */
+.seat_map_chrome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.print_seat_plan_link {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+  padding: 0;
+  font-family: var(--font-family-base);
+}
+
+.print_seat_plan_link:hover {
+  color: #004499;
+}
+
+/* Seat number jump input (P17) */
+.seat_number_input_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seat_number_input_label {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold, 600);
+  font-family: var(--font-family-base);
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, #666);
+}
+
+.seat_number_input {
+  width: 72px;
+  padding: 3px 6px;
+  border: 1px solid var(--color-border, #d0d0d0);
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: var(--font-family-base);
+  outline: none;
+}
+
+.seat_number_input:focus {
+  border-color: var(--color-brand-secondary, #2e6da4);
+  box-shadow: 0 0 0 2px rgba(46, 109, 164, 0.2);
+}
+
+.seat_number_input_error {
+  border-color: var(--color-error, #c62828) !important;
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.2) !important;
+}
+
+.seat_number_input_hint {
+  font-size: 11px;
+  color: var(--color-error, #c62828);
+  font-family: var(--font-family-base);
+}
+
+/* Seat plan sidebar — wraps passenger list + filter panel */
+.seat_plan_sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Seat filter panel */
+.seat_filter_panel {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.seat_filter_panel h3 {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-base);
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted, #666);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.seat_filter_checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 11px;
+  font-family: var(--font-family-base);
+  cursor: pointer;
+  user-select: none;
+}
+
+.seat_filter_checkbox input[type='checkbox'] {
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.flight_selector_bar { display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--color-surface); border-bottom:1px solid var(--color-border); font-size:12px; font-family:var(--font-family-base); }
+.flight_selector_bar select { font-size:12px; font-family:var(--font-family-base); padding:2px 6px; border:1px solid var(--color-border); border-radius:4px; }

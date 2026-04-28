@@ -1,5 +1,14 @@
 import type { SeatStatus } from '@/domain/seat/SeatStatus';
 
+const SILHOUETTE: Record<string, string> = {
+  M: '/silhouettes/sil_male.png',
+  F: '/silhouettes/sil_female.png',
+  U: '/silhouettes/sil_male.png',
+};
+const SILHOUETTE_INFANT = '/silhouettes/sil_infant.png';
+
+const FILTER_DIMMABLE = new Set<SeatStatus>(['available', 'exit_row_available']);
+
 // SeatStatus exhaustiveness: adding to the SeatStatus union MUST add an entry here (TS enforces it)
 const STATUS_CLASS: Record<SeatStatus, string> = {
   available: 'seat_available',
@@ -50,11 +59,12 @@ export interface SeatCellProps {
   isExitRow?: boolean;
   isSelected?: boolean;
   price?: number;
-  passengerInitials?: string | null;
   hasInfant?: boolean;
   blockNote?: string;
   gender?: Gender | null;
   reseatMode?: boolean;
+  isActivePassenger?: boolean;
+  isDimmed?: boolean;
   ssrs?: string[];
   rushStatus?: boolean;
   onSelect: (seatNumber: string) => void;
@@ -66,20 +76,27 @@ export function SeatCell({
   isExitRow = false,
   isSelected = false,
   price,
-  passengerInitials,
   hasInfant,
   blockNote,
   gender,
   reseatMode = false,
+  isActivePassenger = false,
+  isDimmed = false,
   ssrs,
   rushStatus = false,
   onSelect,
 }: SeatCellProps) {
   const clickableSet = reseatMode ? RESEAT_MODE_CLICKABLE : NORMAL_CLICKABLE;
   const isClickable = clickableSet.has(status);
-  const dimmed = reseatMode && !isClickable && status !== 'unavailable';
+  const dimmed = (reseatMode && !isClickable && status !== 'unavailable') || (isDimmed && FILTER_DIMMABLE.has(status));
   const isSideSeat = /[AF]$/.test(seatNumber);
   const showWchr = ssrs?.includes('WCHR') ?? false;
+  const showSilhouette = PASSENGER_STATUSES.has(status);
+  const silhouetteSrc = showSilhouette
+    ? hasInfant
+      ? SILHOUETTE_INFANT
+      : SILHOUETTE[gender ?? 'M']
+    : null;
 
   const classes = [
     'seat_cell',
@@ -89,6 +106,7 @@ export function SeatCell({
     dimmed ? 'seat_cell_dimmed' : '',
     isSideSeat ? 'seat_cell_side' : '',
     rushStatus ? 'seat_rush' : '',
+    isActivePassenger ? 'seat_cell_active_passenger' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -99,17 +117,18 @@ export function SeatCell({
     }
   };
 
-  const showInitials = passengerInitials && PASSENGER_STATUSES.has(status);
-
   return (
-    <button className={classes} onClick={handleClick} type="button">
+    <button className={classes} onClick={handleClick} type="button" aria-label={seatNumber}>
       {gender && (
         <span
           className={`seat_gender_badge ${GENDER_CLASS[gender]}`}
           aria-hidden="true"
         />
       )}
-      {showInitials ? passengerInitials : seatNumber}
+      {silhouetteSrc
+        ? <img className="seat_silhouette" src={silhouetteSrc} alt="" aria-hidden="true" />
+        : seatNumber
+      }
       {price !== undefined && <span className="seat_price">{price}</span>}
       {hasInfant && <span className="seat_infant_indicator" aria-label="infant" />}
       {blockNote && <span className="seat_block_indicator" title={blockNote} aria-label="blocked" />}

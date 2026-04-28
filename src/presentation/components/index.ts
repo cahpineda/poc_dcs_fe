@@ -8,3 +8,8 @@ export { DeckToggle } from './DeckToggle';
 export { SeatMap } from './SeatMap';
 export { SeatPlanTab } from './SeatPlanTab';
 export { SeatColumnHeaders } from './SeatColumnHeaders';
+export { SeatNumberInput } from './SeatNumberInput';
+export type { SeatNumberInputProps } from './SeatNumberInput';
+export { PassengerList } from './PassengerList';
+export { PassengerListItem } from './PassengerListItem';
+export { SeatFilterPanel } from './SeatFilterPanel';

@@ -18,7 +18,7 @@ const { getFlightData } = require('../data/flights');
  *         cabin_class,   // cabin_class of the first seat in the row
  *         seats: [{ seat_number, status, cabin_class, passenger_name,
  *                   has_infant, block_note, gender, passenger_key,
- *                   boarding_group, pnr, rush_status, ssrs }]
+ *                   boarding_group, pnr, rush_status, ssrs, seat_attributes }]
  *       }
  *     ]
  *   }
@@ -55,6 +55,7 @@ function buildSeatPlanResponse(flightId) {
       pnr: s.pnr,
       rush_status: s.rush_status,
       ssrs: s.ssrs,
+      seat_attributes: Array.isArray(s.seat_attributes) ? s.seat_attributes : [],
     }));
 
     seat_rows.push({

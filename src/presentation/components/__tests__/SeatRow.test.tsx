@@ -20,10 +20,20 @@ const makeRow = (overrides: Partial<CabinRow> = {}): CabinRow => ({
 describe('SeatRow', () => {
   it('renders row number and all seat cells', () => {
     render(<SeatRow row={makeRow()} selectedSeat={undefined} onSeatSelect={vi.fn()} />);
-    expect(screen.getByText('12')).toBeDefined();
+    // Row number should appear TWICE (left and right labels — P17 screenshot alignment)
+    const rowNumbers = screen.getAllByText('12');
+    expect(rowNumbers).toHaveLength(2);
     expect(screen.getByText('12A')).toBeDefined();
-    expect(screen.getByText('12B')).toBeDefined();
+    expect(screen.getByRole('button', { name: '12B' })).toBeDefined(); // occupied — shows silhouette, identified by aria-label
     expect(screen.getByText('12C')).toBeDefined();
+  });
+
+  it('renders row number on both left and right sides of each row', () => {
+    const { container } = render(<SeatRow row={makeRow()} selectedSeat={undefined} onSeatSelect={vi.fn()} />);
+    expect(container.querySelector('.row_number_left')).toBeInTheDocument();
+    expect(container.querySelector('.row_number_right')).toBeInTheDocument();
+    expect(container.querySelector('.row_number_left')?.textContent).toBe('12');
+    expect(container.querySelector('.row_number_right')?.textContent).toBe('12');
   });
 
   it('renders empty row without crashing when seats array is empty', () => {
@@ -49,5 +59,3 @@ describe('SeatRow', () => {
     expect(onSelect).toHaveBeenCalledWith('12A');
   });
 });
-
-describe('CabinDeck', () => {});

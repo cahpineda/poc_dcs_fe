@@ -67,21 +67,50 @@ describe('SeatCell', () => {
   });
 });
 
-describe('passenger initials', () => {
-  it('renders passenger initials instead of seat number for occupied seat', () => {
-    render(<SeatCell seatNumber="12A" status="occupied" passengerInitials="JD" onSelect={() => {}} />);
-    expect(screen.getByRole('button')).toHaveTextContent('JD');
-    expect(screen.getByRole('button')).not.toHaveTextContent('12A');
+describe('passenger silhouette', () => {
+  it('renders silhouette image for occupied seat with male gender', () => {
+    const { container } = render(<SeatCell seatNumber="12A" status="occupied" gender="M" onSelect={() => {}} />);
+    const img = container.querySelector('img.seat_silhouette') as HTMLImageElement;
+    expect(img).toBeInTheDocument();
+    expect(img.src).toContain('sil_male.png');
+    expect(screen.getByRole('button', { name: '12A' })).not.toHaveTextContent('12A');
   });
 
-  it('renders seat number for available seat regardless of passengerInitials prop', () => {
-    render(<SeatCell seatNumber="12A" status="available" passengerInitials="JD" onSelect={() => {}} />);
+  it('renders female silhouette for occupied seat with female gender', () => {
+    const { container } = render(<SeatCell seatNumber="3C" status="occupied" gender="F" onSelect={() => {}} />);
+    const img = container.querySelector('img.seat_silhouette') as HTMLImageElement;
+    expect(img).toBeInTheDocument();
+    expect(img.src).toContain('sil_female.png');
+  });
+
+  it('renders male silhouette by default when gender is null', () => {
+    const { container } = render(<SeatCell seatNumber="12A" status="occupied" onSelect={() => {}} />);
+    const img = container.querySelector('img.seat_silhouette') as HTMLImageElement;
+    expect(img).toBeInTheDocument();
+    expect(img.src).toContain('sil_male.png');
+  });
+
+  it('renders infant silhouette when hasInfant=true', () => {
+    const { container } = render(<SeatCell seatNumber="12A" status="occupied" hasInfant={true} onSelect={() => {}} />);
+    const img = container.querySelector('img.seat_silhouette') as HTMLImageElement;
+    expect(img).toBeInTheDocument();
+    expect(img.src).toContain('sil_infant.png');
+  });
+
+  it('does NOT render silhouette for available seat — shows seat number instead', () => {
+    const { container } = render(<SeatCell seatNumber="12A" status="available" onSelect={() => {}} />);
+    expect(container.querySelector('img.seat_silhouette')).not.toBeInTheDocument();
     expect(screen.getByRole('button')).toHaveTextContent('12A');
   });
 
-  it('renders seat number when passengerInitials is null', () => {
-    render(<SeatCell seatNumber="12A" status="occupied" passengerInitials={null} onSelect={() => {}} />);
-    expect(screen.getByRole('button')).toHaveTextContent('12A');
+  it('renders silhouette for checked_in status', () => {
+    const { container } = render(<SeatCell seatNumber="5A" status="checked_in" gender="F" onSelect={() => {}} />);
+    expect(container.querySelector('img.seat_silhouette')).toBeInTheDocument();
+  });
+
+  it('renders silhouette for boarded status', () => {
+    const { container } = render(<SeatCell seatNumber="5A" status="boarded" gender="M" onSelect={() => {}} />);
+    expect(container.querySelector('img.seat_silhouette')).toBeInTheDocument();
   });
 });
 
@@ -312,6 +341,29 @@ describe('CSS token values match cloud_2', () => {
   });
 });
 
+describe('SeatCell — active passenger highlight', () => {
+  it('adds seat_cell_active_passenger class when isActivePassenger=true', () => {
+    const { container } = render(
+      <SeatCell seatNumber="1B" status="occupied" isActivePassenger={true} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('seat_cell_active_passenger');
+  });
+
+  it('does NOT add seat_cell_active_passenger when isActivePassenger=false', () => {
+    const { container } = render(
+      <SeatCell seatNumber="1B" status="occupied" isActivePassenger={false} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_cell_active_passenger');
+  });
+
+  it('does NOT add seat_cell_active_passenger when isActivePassenger is omitted', () => {
+    const { container } = render(
+      <SeatCell seatNumber="1B" status="occupied" onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_cell_active_passenger');
+  });
+});
+
 describe('SeatCell — SSR and rush overlays', () => {
   it('renders seat_ssr_wchr badge when ssrs includes WCHR', () => {
     const { container } = render(
@@ -349,6 +401,50 @@ describe('SeatCell — SSR and rush overlays', () => {
       <SeatCell seatNumber="5A" status="occupied" onSelect={vi.fn()} />
     );
     expect(container.firstChild).not.toHaveClass('seat_rush');
+  });
+});
+
+describe('SeatCell — filter dimming (isDimmed prop)', () => {
+  it('adds seat_cell_dimmed class when isDimmed=true and seat is available', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5C" status="available" isDimmed={true} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('seat_cell_dimmed');
+  });
+
+  it('adds seat_cell_dimmed class when isDimmed=true and seat is exit_row_available', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5C" status="exit_row_available" isDimmed={true} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).toHaveClass('seat_cell_dimmed');
+  });
+
+  it('does NOT add seat_cell_dimmed when isDimmed=true but seat is occupied', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5C" status="occupied" isDimmed={true} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_cell_dimmed');
+  });
+
+  it('does NOT add seat_cell_dimmed when isDimmed=true but seat is blocked', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5C" status="blocked" isDimmed={true} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_cell_dimmed');
+  });
+
+  it('does NOT add seat_cell_dimmed when isDimmed=false', () => {
+    const { container } = render(
+      <SeatCell seatNumber="5C" status="available" isDimmed={false} onSelect={vi.fn()} />
+    );
+    expect(container.firstChild).not.toHaveClass('seat_cell_dimmed');
+  });
+
+  it('clicking a dimmed available seat still fires onSelect', async () => {
+    const onSelect = vi.fn();
+    render(<SeatCell seatNumber="5C" status="available" isDimmed={true} onSelect={onSelect} />);
+    await userEvent.click(screen.getByRole('button'));
+    expect(onSelect).toHaveBeenCalledWith('5C');
   });
 });
 

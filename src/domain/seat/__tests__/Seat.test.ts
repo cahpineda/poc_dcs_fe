@@ -2,6 +2,70 @@ import { describe, it, expect } from 'vitest';
 import { SeatNumber } from '../SeatNumber';
 import { Seat } from '../Seat';
 import type { SeatStatus } from '../SeatStatus';
+import type { SeatFilterId } from '../SeatFilter';
+
+describe('Seat.attributes', () => {
+  it('exposes attributes getter as readonly array when provided', () => {
+    const attrs: SeatFilterId[] = ['window', 'usb_power'];
+    const seat = Seat.create({
+      seatNumber: SeatNumber.create('1A'),
+      status: 'available',
+      cabinClass: 'Y',
+      attributes: attrs,
+    });
+    expect(seat.attributes).toEqual(['window', 'usb_power']);
+    expect(Object.isFrozen(seat.attributes)).toBe(true);
+  });
+
+  it('defaults attributes to empty frozen array when omitted (backward compat)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('1A'), status: 'available', cabinClass: 'Y' });
+    expect(seat.attributes).toEqual([]);
+    expect(Object.isFrozen(seat.attributes)).toBe(true);
+  });
+});
+
+describe('Seat.matchesFilter', () => {
+  it('returns true for exit_emergency when seat status is exit_row_available (derived)', () => {
+    const seat = Seat.create({
+      seatNumber: SeatNumber.create('14C'),
+      status: 'exit_row_available',
+      cabinClass: 'Y',
+    });
+    expect(seat.matchesFilter('exit_emergency')).toBe(true);
+  });
+
+  it('returns false for exit_emergency when seat is not an exit row', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('5C'), status: 'available', cabinClass: 'Y' });
+    expect(seat.matchesFilter('exit_emergency')).toBe(false);
+  });
+
+  it('returns true for window filter when seat number ends in A (derived)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('5A'), status: 'available', cabinClass: 'Y' });
+    expect(seat.matchesFilter('window')).toBe(true);
+  });
+
+  it('returns true for window filter when seat number ends in F (derived)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('5F'), status: 'available', cabinClass: 'Y' });
+    expect(seat.matchesFilter('window')).toBe(true);
+  });
+
+  it('returns false for window filter when seat is a middle seat (B)', () => {
+    const seat = Seat.create({ seatNumber: SeatNumber.create('5B'), status: 'available', cabinClass: 'Y' });
+    expect(seat.matchesFilter('window')).toBe(false);
+  });
+
+  it('returns true for fixture-driven filter when attribute is in seat attributes', () => {
+    const seat = Seat.create({
+      seatNumber: SeatNumber.create('2C'),
+      status: 'available',
+      cabinClass: 'Y',
+      attributes: ['usb_power', 'bulkhead'],
+    });
+    expect(seat.matchesFilter('usb_power')).toBe(true);
+    expect(seat.matchesFilter('bulkhead')).toBe(true);
+    expect(seat.matchesFilter('stretcher')).toBe(false);
+  });
+});
 
 describe('passenger extended fields', () => {
   it('exposes passengerKey getter (default null)', () => {

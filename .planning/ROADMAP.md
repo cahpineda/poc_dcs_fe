@@ -26,6 +26,8 @@ None
 - [x] **Phase 14: Passenger Overlays and Cabin Dividers** - WCHR badge, rush outline, boarding group/PNR in drawer, cabin section dividers
 - [x] **Phase 15: Advanced Operations** - Seat swap (two-click) and group reseat (multi-select) — closes remaining Category 4 gaps
 - [x] **Phase 16: Parity Audit and Fix** - Full visual/functional audit against cloud2, document and fix all discrepancies (ACA-2953)
+- [x] **Phase 17: Screenshot Visual Alignment** - Audit and fix every visual/layout gap vs cloud2 reference screenshots — seat input field, print link, dual-side row numbers, reseat banner badge styling, active passenger highlight, pixel-level color verification
+- [x] **Phase 18: Passenger Manifest Panel** - Left passenger sidebar (manifest list with check-in status badges, click-to-highlight-seat, count) and SEAT FILTERS checkbox panel — biggest remaining functional gap against cloud2
 
 ## Phase Details
 
@@ -251,12 +253,46 @@ Plans:
 - Group reseat: GROUP RESEAT button → group mode → multi-click occupied seats → MOVE GROUP fires ReseatGroupCommand
 - 244 total tests, 0 failures after this phase
 
-### Phase 16: Parity Audit and Fix
+### Phase 16: Parity Audit and Fix ✅
 **Goal**: Full visual and functional audit of the React POC against cloud2. Document every discrepancy, fix all gaps, validate all user flows against the mock server. Deliver evidence (console clean, all tests pass) for ACA-2953 sign-off.
 **Depends on**: Phase 15
 **Jira**: ACA-2953
+**Completed**: 2026-04-28
 **Plans**: 1 plan
 
 Plans:
-- [ ] 16-01: Parity audit — catalogue cloud2 UI states/interactions/API contracts, compare React component by component, fix all discrepancies found (TDD where applicable)
+- [x] 16-01: Parity audit — catalogue cloud2 UI states/interactions/API contracts, compare React component by component, fix all discrepancies found (TDD where applicable)
 
+### Phase 17: Screenshot Visual Alignment ✅
+**Goal**: Audit and fix every visual discrepancy between cloud2 reference screenshots (`docs/screenshots/seat_plan.png`, `seat_plan2.png`) and the current React POC. Visual-only — zero new functional features. Adds the SEAT input field, "Print Seat Plan" link, dual-side row numbers, reseat banner badge styling, active-passenger seat highlight, and pixel-level color verification.
+**Depends on**: Phase 16
+**Completed**: 2026-04-28
+**Plans**: 1 plan
+
+Plans:
+- [x] 17-01: Screenshot gap audit (SCREENSHOT-AUDIT.md) → layout chrome additions (SeatNumberInput, print link, dual row numbers) → visual polish (banner badge, active highlight, color drift) → console-clean validation
+
+**Notes**:
+- The 5 cloud2-locked colors from Phase 12 (#4A4D4F, #947a9c, #C1AA02, #77AE00, #006400) are FROZEN — drift findings against those are out-of-scope (defer)
+- Phase 17 introduces the reusable `.status_pill` / `.status_pill_unchecked` CSS class — Phase 18 reuses for the passenger list
+- Touches presentation/ + styles/ only; no domain, application, or infrastructure changes
+- 256 total tests, 0 failures after this phase
+
+### Phase 18: Passenger Manifest Panel ✅
+**Goal**: Implement the left passenger sidebar — passenger manifest list with check-in status badges, click-to-highlight-seat, count, AND the SEAT FILTERS checkbox panel (11 filters). Biggest remaining functional gap against cloud2. No new API endpoints — derives the passenger list from the existing SeatPlanResult; extends the seat plan response with a `seat_attributes` array per seat for filter matching.
+**Depends on**: Phase 17
+**Completed**: 2026-04-28
+**Plans**: 2 plans
+
+Plans:
+- [x] 18-01: Passenger manifest — `Passenger` domain projection + `SeatPlanResult.derivePassengers()`; PassengerList + PassengerListItem components; SeatPlanTab integration with click-to-highlight + click-to-reseat (TDD)
+- [x] 18-02: SEAT FILTERS — `SeatFilter` domain (11 ids + matchers, window/exit_emergency derived); seat_attributes mapper extension; mock fixture updates (FL001/FL002); SeatFilterPanel checkbox UI; SeatCell dimming (DIM not HIDE) on non-matching available seats (TDD)
+
+**Notes**:
+- The passenger list is read-only in Phase 18 — top action buttons (Check-In Group, Check In, Finish and Search Passengers) render disabled for visual parity; real check-in workflow deferred to a future phase
+- Filter semantic is OR (any active filter matching = bright); AND semantic deferred to a follow-up if requested
+- isCheckedIn derived from seat.status === 'checked_in' || 'boarded' (no real check-in domain field yet)
+- Hexagonal preserved: presentation never imports infrastructure; passenger projection lives in domain/
+
+</content>
+</invoke>

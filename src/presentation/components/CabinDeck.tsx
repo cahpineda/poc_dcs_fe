@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { CabinRow } from '@/domain/seat/CabinRow';
+import type { SeatFilterId } from '@/domain/seat/SeatFilter';
 import { SeatRow } from './SeatRow';
 import { SeatColumnHeaders } from './SeatColumnHeaders';
 
@@ -7,6 +8,8 @@ interface CabinDeckProps {
   rows: CabinRow[];
   selectedSeat?: string;
   reseatMode?: boolean;
+  activePassengerSeat?: string | null;
+  activeFilters?: ReadonlySet<SeatFilterId>;
   onSeatSelect: (seatNumber: string) => void;
 }
 
@@ -24,7 +27,7 @@ function CabinDivider({ label }: { label: string }) {
   );
 }
 
-export function CabinDeck({ rows, selectedSeat, reseatMode = false, onSeatSelect }: CabinDeckProps) {
+export function CabinDeck({ rows, selectedSeat, reseatMode = false, activePassengerSeat, activeFilters, onSeatSelect }: CabinDeckProps) {
   const columns = rows[0]?.seats.map((seat) => seat.number.rawValue.slice(-1)) ?? [];
 
   const elements: ReactNode[] = [];
@@ -43,6 +46,8 @@ export function CabinDeck({ rows, selectedSeat, reseatMode = false, onSeatSelect
         row={row}
         selectedSeat={selectedSeat}
         reseatMode={reseatMode}
+        activePassengerSeat={activePassengerSeat}
+        activeFilters={activeFilters}
         onSeatSelect={onSeatSelect}
       />
     );

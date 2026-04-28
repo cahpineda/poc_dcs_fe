@@ -114,7 +114,7 @@ describe('SeatPlanTab — passenger drawer', () => {
   it('clicking an occupied seat opens the drawer', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' })); // 1B shows initials 'JD'
+    await user.click(screen.getByRole('button', { name: '1B' })); // 1B shows initials 'JD'
     expect(screen.getByRole('complementary', { name: /passenger details/i })).toBeInTheDocument();
     expect(screen.getByText('JANE DOE')).toBeInTheDocument();
   });
@@ -122,7 +122,7 @@ describe('SeatPlanTab — passenger drawer', () => {
   it('clicking an occupied seat does NOT fire assignMutation', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' }));
+    await user.click(screen.getByRole('button', { name: '1B' }));
     expect(mutateSpy).not.toHaveBeenCalled();
   });
 
@@ -137,7 +137,7 @@ describe('SeatPlanTab — passenger drawer', () => {
   it('clicking the close button hides the drawer', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' }));
+    await user.click(screen.getByRole('button', { name: '1B' }));
     expect(screen.getByRole('complementary', { name: /passenger details/i })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /close drawer/i }));
     expect(screen.queryByRole('complementary', { name: /passenger details/i })).not.toBeInTheDocument();
@@ -146,7 +146,7 @@ describe('SeatPlanTab — passenger drawer', () => {
   it('clicking checked_in seat opens drawer', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'BS' })); // 1C: BOB SMITH → BS
+    await user.click(screen.getByRole('button', { name: '1C' })); // 1C: BOB SMITH → BS
     expect(screen.getByRole('complementary', { name: /passenger details/i })).toBeInTheDocument();
     expect(screen.getByText('BOB SMITH')).toBeInTheDocument();
   });
@@ -164,7 +164,7 @@ describe('SeatPlanTab — block/unblock wiring', () => {
   it('clicking "Block seat" calls blockMutate with correct BlockSeatCommand', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' })); // open drawer for 1B
+    await user.click(screen.getByRole('button', { name: '1B' })); // open drawer for 1B
     await user.click(screen.getByRole('button', { name: /block seat/i }));
     expect(blockMutateSpy).toHaveBeenCalledOnce();
     const cmd = blockMutateSpy.mock.calls[0][0] as BlockSeatCommand;
@@ -191,7 +191,7 @@ describe('SeatPlanTab — reseat flow', () => {
   it('clicking Reseat enters reseat mode and shows banner with passenger name', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' })); // 1B JANE DOE
+    await user.click(screen.getByRole('button', { name: '1B' })); // 1B JANE DOE
     await user.click(screen.getByRole('button', { name: /^reseat$/i }));
     expect(screen.queryByRole('complementary', { name: /passenger details/i })).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toBeInTheDocument(); // reseat banner has role=status
@@ -201,16 +201,27 @@ describe('SeatPlanTab — reseat flow', () => {
   it('reseat banner shows correct passenger name for the clicked seat', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'BS' })); // 1C BOB SMITH
+    await user.click(screen.getByRole('button', { name: '1C' })); // 1C BOB SMITH
     await user.click(screen.getByRole('button', { name: /^reseat$/i }));
     expect(screen.getByText(/bob smith/i)).toBeInTheDocument();
+  });
+
+  it('reseat banner shows NOT CHECKEDIN status pill (P17 screenshot alignment)', async () => {
+    const user = userEvent.setup();
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    await user.click(screen.getByRole('button', { name: '1B' })); // 1B JANE DOE
+    await user.click(screen.getByRole('button', { name: /^reseat$/i }));
+    expect(screen.getByText('NOT CHECKEDIN')).toBeInTheDocument();
+    const pill = screen.getByText('NOT CHECKEDIN');
+    expect(pill).toHaveClass('status_pill');
+    expect(pill).toHaveClass('status_pill_unchecked');
   });
 
   it('clicking an available seat in reseat mode fires ReseatPassengerCommand with correct fields', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
     // Enter reseat mode for 1B (JANE DOE)
-    await user.click(screen.getByRole('button', { name: 'JD' }));
+    await user.click(screen.getByRole('button', { name: '1B' }));
     await user.click(screen.getByRole('button', { name: /^reseat$/i }));
     // Pick available seat 1A
     await user.click(screen.getByRole('button', { name: '1A' }));
@@ -226,7 +237,7 @@ describe('SeatPlanTab — reseat flow', () => {
   it('reseat mode exits after successful reseat (banner disappears)', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' }));
+    await user.click(screen.getByRole('button', { name: '1B' }));
     await user.click(screen.getByRole('button', { name: /^reseat$/i }));
     await user.click(screen.getByRole('button', { name: '1A' }));
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -235,7 +246,7 @@ describe('SeatPlanTab — reseat flow', () => {
   it('clicking Cancel exits reseat mode without firing mutation', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' }));
+    await user.click(screen.getByRole('button', { name: '1B' }));
     await user.click(screen.getByRole('button', { name: /^reseat$/i }));
     expect(screen.getByRole('status')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /cancel/i }));
@@ -246,9 +257,9 @@ describe('SeatPlanTab — reseat flow', () => {
   it('clicking an occupied seat in reseat mode does NOT open drawer or fire mutation', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' })); // enter drawer for 1B
+    await user.click(screen.getByRole('button', { name: '1B' })); // enter drawer for 1B
     await user.click(screen.getByRole('button', { name: /^reseat$/i })); // enter reseat mode
-    await user.click(screen.getByRole('button', { name: 'BS' })); // try to click 1C (occupied) in reseat mode
+    await user.click(screen.getByRole('button', { name: '1C' })); // try to click 1C (occupied) in reseat mode
     expect(screen.queryByRole('complementary', { name: /passenger details/i })).not.toBeInTheDocument();
     expect(reseatMutateSpy).not.toHaveBeenCalled();
   });
@@ -258,7 +269,7 @@ describe('SeatPlanTab — unseat wiring', () => {
   it('clicking UNSEAT in drawer calls unassignMutateSpy with correct UnassignSeatCommand and closes drawer', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' })); // open drawer for 1B (JANE DOE)
+    await user.click(screen.getByRole('button', { name: '1B' })); // open drawer for 1B (JANE DOE)
     await user.click(screen.getByRole('button', { name: /unseat/i }));
     expect(unassignMutateSpy).toHaveBeenCalledOnce();
     const cmd = unassignMutateSpy.mock.calls[0][0];
@@ -272,14 +283,14 @@ describe('SeatPlanTab — swap mode', () => {
   it('SWAP button appears in drawer for an occupied seat', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' })); // 1B JANE DOE
+    await user.click(screen.getByRole('button', { name: '1B' })); // 1B JANE DOE
     expect(screen.getByRole('button', { name: /swap/i })).toBeInTheDocument();
   });
 
   it('clicking SWAP in drawer calls swapSelectSeatSpy with the seat object for 1B', async () => {
     const user = userEvent.setup();
     render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
-    await user.click(screen.getByRole('button', { name: 'JD' })); // open drawer for 1B
+    await user.click(screen.getByRole('button', { name: '1B' })); // open drawer for 1B
     await user.click(screen.getByRole('button', { name: /swap/i }));
     expect(swapSelectSeatSpy).toHaveBeenCalledOnce();
     const arg = swapSelectSeatSpy.mock.calls[0][0];
@@ -316,5 +327,64 @@ describe('SeatPlanTab — group reseat mode', () => {
     await user.click(screen.getByRole('button', { name: /group reseat/i }));
     await user.click(screen.getByRole('button', { name: /move group/i }));
     expect(groupConfirmSpy).toHaveBeenCalledOnce();
+  });
+});
+
+describe('SeatPlanTab — seat filter panel', () => {
+  it('renders the SeatFilterPanel inside the left sidebar', () => {
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    expect(screen.getByRole('heading', { name: /SEAT FILTERS/i })).toBeInTheDocument();
+  });
+
+  it('with no filters active, no available seats have the dim class', () => {
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    const availSeats = ['1A', '1E', '1F'];
+    for (const seatNum of availSeats) {
+      const btn = screen.getByRole('button', { name: seatNum });
+      expect(btn).not.toHaveClass('seat_cell_dimmed');
+    }
+  });
+
+  it('after checking a filter, available seats without that attribute get dimmed', async () => {
+    const user = userEvent.setup();
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    // Fixture seats have no attributes, so extra_leg_room will dim all available seats
+    await user.click(screen.getByLabelText('Extra Leg Room'));
+    const seat1A = screen.getByRole('button', { name: '1A' });
+    expect(seat1A).toHaveClass('seat_cell_dimmed');
+  });
+
+  it('after unchecking the filter, dimmed seats return to normal', async () => {
+    const user = userEvent.setup();
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    await user.click(screen.getByLabelText('Extra Leg Room'));
+    // Dimmed now — uncheck it
+    await user.click(screen.getByLabelText('Extra Leg Room'));
+    const seat1A = screen.getByRole('button', { name: '1A' });
+    expect(seat1A).not.toHaveClass('seat_cell_dimmed');
+  });
+});
+
+describe('SeatPlanTab — passenger list panel', () => {
+  it('renders the passenger manifest aside when seat plan loads', () => {
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    expect(screen.getByRole('complementary', { name: /passenger manifest/i })).toBeInTheDocument();
+  });
+
+  it('passenger list shows occupied passengers derived from seat plan', () => {
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    // makeFixturePlan has 2 occupied seats: 1B (JANE DOE) and 1C (BOB SMITH, checked_in)
+    expect(screen.getByText('DOE,JANE')).toBeInTheDocument();
+    expect(screen.getByText('SMITH,BOB')).toBeInTheDocument();
+  });
+
+  it('clicking a passenger in the list opens the drawer for their seat', async () => {
+    const user = userEvent.setup();
+    render(<SeatPlanTab flightId="FL123" />, { wrapper: makeWrapper() });
+    // Click JANE DOE entry in the list (role=button on the li element)
+    const janeEntry = screen.getByText('DOE,JANE').closest('[role="button"]') as HTMLElement;
+    await user.click(janeEntry);
+    expect(screen.getByRole('complementary', { name: /passenger details/i })).toBeInTheDocument();
+    expect(screen.getByText('JANE DOE')).toBeInTheDocument();
   });
 });

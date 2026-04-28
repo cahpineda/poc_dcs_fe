@@ -1,8 +1,12 @@
 import { Seat } from '@/domain/seat/Seat';
 import { SeatNumber } from '@/domain/seat/SeatNumber';
 import { SeatPlanResult } from '@/domain/seat/SeatPlanResult';
+import { SEAT_FILTER_IDS } from '@/domain/seat/SeatFilter';
+import type { SeatFilterId } from '@/domain/seat/SeatFilter';
 import type { CabinRow } from '@/domain/seat/CabinRow';
 import type { SeatStatus } from '@/domain/seat/SeatStatus';
+
+const SEAT_FILTER_ID_SET: ReadonlySet<string> = new Set(SEAT_FILTER_IDS);
 
 const STATUS_MAP: Record<string, SeatStatus> = {
   A: 'available',
@@ -18,6 +22,19 @@ const STATUS_MAP: Record<string, SeatStatus> = {
 
 function mapStatus(code: string): SeatStatus {
   return STATUS_MAP[code] ?? 'unavailable';
+}
+
+function mapAttributes(raw: unknown, seatNumber: string): SeatFilterId[] {
+  if (!Array.isArray(raw)) return [];
+  const result: SeatFilterId[] = [];
+  for (const id of raw) {
+    if (SEAT_FILTER_ID_SET.has(String(id))) {
+      result.push(id as SeatFilterId);
+    } else {
+      console.warn(`seatPlanMapper: unknown seat_attribute "${id}" on seat ${seatNumber}`);
+    }
+  }
+  return result;
 }
 
 export function mapSeatPlanDTO(dto: unknown): SeatPlanResult {
@@ -47,6 +64,7 @@ export function mapSeatPlanDTO(dto: unknown): SeatPlanResult {
         rushStatus: Boolean(s.rush_status),
         pnr: typeof s.pnr === 'string' ? s.pnr : null,
         ssrs: Array.isArray(s.ssrs) ? (s.ssrs as string[]) : [],
+        attributes: mapAttributes(s.seat_attributes, String(s.seat_number)),
       })
     );
     return {

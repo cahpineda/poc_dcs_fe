@@ -15,10 +15,11 @@ export class Cloud2SeatPlanAdapter implements ISeatPlanQueryService {
   async getSeatPlan(flightId: string): Promise<SeatPlanResult> {
     if (!flightId) throw new Error('flightId is required');
     try {
-      const { data } = await this.http.get('/ws/v1.8/get_seat_plan', {
+      const { data: envelope } = await this.http.get('/ws/v1.8/get_seat_plan', {
         params: { flight_id: flightId },
       });
-      return mapSeatPlanDTO(data);
+      const payload = (envelope as Record<string, unknown>).data ?? envelope;
+      return mapSeatPlanDTO(payload);
     } catch (err) {
       if (isServerError(err)) throw new Error('Seat plan service unavailable');
       throw err;
@@ -27,9 +28,10 @@ export class Cloud2SeatPlanAdapter implements ISeatPlanQueryService {
 
   async getSeatOccupancy(flightId: string): Promise<SeatPlanResult> {
     if (!flightId) throw new Error('flightId is required');
-    const { data } = await this.http.get('/ws/v1.8/get_seat_occupancy', {
+    const { data: envelope } = await this.http.get('/ws/v1.8/get_seat_occupancy', {
       params: { flight_id: flightId },
     });
-    return mapSeatPlanDTO(data);
+    const payload = (envelope as Record<string, unknown>).data ?? envelope;
+    return mapSeatPlanDTO(payload);
   }
 }

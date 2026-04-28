@@ -1,5 +1,6 @@
 import type { SeatNumber } from './SeatNumber';
 import type { SeatStatus } from './SeatStatus';
+import type { SeatFilterId } from './SeatFilter';
 
 export type SeatGender = 'M' | 'F' | 'U';
 
@@ -18,6 +19,7 @@ interface SeatProps {
   rushStatus?: boolean;
   pnr?: string | null;
   ssrs?: string[];
+  attributes?: SeatFilterId[];
 }
 
 export class Seat {
@@ -33,7 +35,8 @@ export class Seat {
     private readonly _boardingGroup: number | null,
     private readonly _rushStatus: boolean,
     private readonly _pnr: string | null,
-    private readonly _ssrs: string[]
+    private readonly _ssrs: string[],
+    private readonly _attributes: readonly SeatFilterId[]
   ) {}
 
   static create(props: SeatProps): Seat {
@@ -52,7 +55,8 @@ export class Seat {
     const rushStatus = Boolean(props.rushStatus);
     const pnr = typeof props.pnr === 'string' ? props.pnr : null;
     const ssrs = Array.isArray(props.ssrs) ? props.ssrs : [];
-    return new Seat(props.seatNumber, props.status, props.cabinClass, passengerName, hasInfant, blockNote, gender, passengerKey, boardingGroup, rushStatus, pnr, ssrs);
+    const attributes = Object.freeze(Array.isArray(props.attributes) ? [...props.attributes] : []);
+    return new Seat(props.seatNumber, props.status, props.cabinClass, passengerName, hasInfant, blockNote, gender, passengerKey, boardingGroup, rushStatus, pnr, ssrs, attributes);
   }
 
   isAvailable(): boolean {
@@ -119,11 +123,25 @@ export class Seat {
     return this._ssrs;
   }
 
+  get attributes(): readonly SeatFilterId[] {
+    return this._attributes;
+  }
+
+  matchesFilter(id: SeatFilterId): boolean {
+    if (id === 'exit_emergency' && this.isExitRow()) return true;
+    if (id === 'window') {
+      const col = this._number.toString().slice(-1);
+      if (col === 'A' || col === 'F') return true;
+    }
+    return this._attributes.includes(id);
+  }
+
   withStatus(status: SeatStatus): Seat {
     return new Seat(
       this._number, status, this._cabin,
       this._passengerName, this._hasInfant, this._blockNote, this._gender,
-      this._passengerKey, this._boardingGroup, this._rushStatus, this._pnr, this._ssrs
+      this._passengerKey, this._boardingGroup, this._rushStatus, this._pnr, this._ssrs,
+      this._attributes
     );
   }
 

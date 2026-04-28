@@ -160,6 +160,52 @@ describe('seatPlanMapper', () => {
     expect(seat.ssrs).toEqual(['WCHR']);
   });
 
+  it('maps seat_attributes from DTO to Seat.attributes', () => {
+    const dto = {
+      flight_id: 'FL001', is_upper_deck: false,
+      seat_rows: [{
+        row_number: 1, is_exit_row: false,
+        seats: [{ seat_number: '1B', status: 'A', cabin_class: 'Y', seat_attributes: ['usb_power', 'extra_leg_room'] }],
+      }],
+    };
+    const result = mapSeatPlanDTO(dto);
+    expect(result.rows[0].seats[0].attributes).toEqual(['usb_power', 'extra_leg_room']);
+  });
+
+  it('defaults to empty attributes when seat_attributes is absent (backward compat)', () => {
+    const dto = {
+      flight_id: 'FL001', is_upper_deck: false,
+      seat_rows: [{ row_number: 1, is_exit_row: false, seats: [{ seat_number: '1A', status: 'A', cabin_class: 'Y' }] }],
+    };
+    const result = mapSeatPlanDTO(dto);
+    expect(result.rows[0].seats[0].attributes).toEqual([]);
+  });
+
+  it('filters out unknown ids from seat_attributes using the allow-list', () => {
+    const dto = {
+      flight_id: 'FL001', is_upper_deck: false,
+      seat_rows: [{
+        row_number: 1, is_exit_row: false,
+        seats: [{ seat_number: '1A', status: 'A', cabin_class: 'Y', seat_attributes: ['unknown_feature', 'usb_power'] }],
+      }],
+    };
+    const result = mapSeatPlanDTO(dto);
+    expect(result.rows[0].seats[0].attributes).toEqual(['usb_power']);
+  });
+
+  it('fixture-driven filter ids round-trip: each id maps through to seat.matchesFilter', () => {
+    const fixtureIds = ['extra_leg_room', 'stretcher', 'no_smoke', 'infant_eligible',
+      'bulkhead', 'galley_proximity', 'usb_power', 'window_no_view', 'other'];
+    for (const id of fixtureIds) {
+      const dto = {
+        flight_id: 'FX', is_upper_deck: false,
+        seat_rows: [{ row_number: 1, is_exit_row: false, seats: [{ seat_number: '1C', status: 'A', cabin_class: 'Y', seat_attributes: [id] }] }],
+      };
+      const seat = mapSeatPlanDTO(dto).rows[0].seats[0];
+      expect(seat.matchesFilter(id as never)).toBe(true);
+    }
+  });
+
   it('maps passenger_name from DTO to Seat.passengerInitials', () => {
     const dto = {
       flight_id: 'FX1',

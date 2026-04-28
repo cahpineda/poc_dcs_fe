@@ -1,5 +1,6 @@
 import type { CabinRow } from './CabinRow';
 import type { Seat } from './Seat';
+import { Passenger } from './Passenger';
 
 interface SeatPlanResultProps {
   rows: CabinRow[];
@@ -40,5 +41,16 @@ export class SeatPlanResult {
       if (seat) return seat;
     }
     return undefined;
+  }
+
+  derivePassengers(): Passenger[] {
+    const out: Passenger[] = [];
+    for (const row of this.rows) {
+      for (const seat of row.seats) {
+        const p = Passenger.fromSeat(seat);
+        if (p) out.push(p);
+      }
+    }
+    return out;
   }
 }
