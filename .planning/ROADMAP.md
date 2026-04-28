@@ -25,6 +25,7 @@ None
 - [x] **Phase 13: Domain Passenger Fields and Unseat** - Real passenger_key, boardingGroup, rushStatus, pnr fields + UNSEAT operation
 - [x] **Phase 14: Passenger Overlays and Cabin Dividers** - WCHR badge, rush outline, boarding group/PNR in drawer, cabin section dividers
 - [x] **Phase 15: Advanced Operations** - Seat swap (two-click) and group reseat (multi-select) — closes remaining Category 4 gaps
+- [ ] **Phase 16: Parity Audit and Fix** - Full visual/functional audit against cloud2, document and fix all discrepancies (ACA-2953)
 
 ## Phase Details
 
@@ -249,4 +250,13 @@ Plans:
 - Swap: click occupied → banner → click second seat → SwapSeatsCommand fires
 - Group reseat: GROUP RESEAT button → group mode → multi-click occupied seats → MOVE GROUP fires ReseatGroupCommand
 - 244 total tests, 0 failures after this phase
+
+### Phase 16: Parity Audit and Fix
+**Goal**: Full visual and functional audit of the React POC against cloud2. Document every discrepancy, fix all gaps, validate all user flows against the mock server. Deliver evidence (console clean, all tests pass) for ACA-2953 sign-off.
+**Depends on**: Phase 15
+**Jira**: ACA-2953
+**Plans**: 1 plan
+
+Plans:
+- [ ] 16-01: Parity audit — catalogue cloud2 UI states/interactions/API contracts, compare React component by component, fix all discrepancies found (TDD where applicable)
 
